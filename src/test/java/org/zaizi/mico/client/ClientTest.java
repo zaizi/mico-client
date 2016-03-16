@@ -14,7 +14,7 @@ import org.zaizi.mico.client.status.impl.StatusResponse;
 
 public class ClientTest {
 
-	private static final String MICO_HOST = "mico-platform:8080";
+	private static final String MICO_HOST = "localhost:8080";
 	private static final String MICO_USER = "mico";
 	private static final String MICO_PASSWORD = "mico";
 
@@ -27,12 +27,12 @@ public class ClientTest {
 //
 //	@Test
 //	public void testInject() throws MicoClientException, FileNotFoundException {
-//		String filePath = "/Users/cperera/Desktop/testdata/download.jpeg";
+//		String filePath = "/Users/cperera/Desktop/testdata/download-face.png";
 //		InputStream is = new FileInputStream(filePath);
 //
 //		 Injector injector = micoClientfactory.createInjectorClient();
 //		 ContentItem ci = injector.createContentItem();
-//		 ContentPart cp = injector.addContentPart(ci, "image/jpeg", filePath,
+//		 ContentPart cp = injector.addContentPart(ci, "image/png", filePath,
 //		 is);
 //		 ci.addContentPart(cp);
 //		 injector.submitContentItem(ci);

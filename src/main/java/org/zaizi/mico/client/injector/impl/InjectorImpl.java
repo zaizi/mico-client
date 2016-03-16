@@ -1,5 +1,6 @@
 package org.zaizi.mico.client.injector.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -7,12 +8,13 @@ import java.net.URISyntaxException;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -88,8 +90,11 @@ public class InjectorImpl implements Injector{
 					.build();
 			
 			final HttpPost post = new HttpPost(addUri);
-			InputStreamEntity isEntity = new InputStreamEntity(inputStream);
-			post.setEntity(isEntity);
+			File tempFile = File.createTempFile("mico-"+contentItem.getID(), "tmp");
+			FileUtils.copyInputStreamToFile(inputStream, tempFile);
+			
+			FileEntity entity = new FileEntity(tempFile);
+			post.setEntity(entity);
 			
 			final CloseableHttpResponse response = this.sendRequest(post);
 			
@@ -110,6 +115,8 @@ public class InjectorImpl implements Injector{
             final String contentPartUri = node.get("uri").asText();
             
             ContentPart contentPart = new ContentPart(contentPartUri, mimeType, name);
+            
+            tempFile.delete();
             
             return contentPart;
             
