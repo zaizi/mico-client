@@ -27,18 +27,17 @@ public class ClientTest {
 //
 //	@Test
 //	public void testInject() throws MicoClientException, FileNotFoundException {
-//		String filePath = "/Users/cperera/Desktop/testdata/download-face.png";
+//		String filePath = "/Users/cperera/Desktop/ipython/topicmodel_data_small/AP880220-0071 .txt";
 //		InputStream is = new FileInputStream(filePath);
 //
 //		 Injector injector = micoClientfactory.createInjectorClient();
 //		 ContentItem ci = injector.createContentItem();
-//		 ContentPart cp = injector.addContentPart(ci, "image/png", filePath,
+//		 ContentPart cp = injector.addContentPart(ci, "text/plain", filePath,
 //		 is);
 //		 ci.addContentPart(cp);
 //		 injector.submitContentItem(ci);
 //
 //		
-//
 //		StatusChecker statusChecker = micoClientfactory.createStatusChecker();
 //		while (true) {
 //			List<StatusResponse> statusResponses = statusChecker.checkItemStatus(ci, true);
