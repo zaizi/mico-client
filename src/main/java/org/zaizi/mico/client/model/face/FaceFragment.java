@@ -2,31 +2,31 @@ package org.zaizi.mico.client.model.face;
 
 public class FaceFragment {
 
-	private Long x;
-    private Long y;
-    private Long width;
-    private Long height;
+	private int x;
+    private int y;
+    private int width;
+    private int height;
     
-    public FaceFragment(Long x, Long y, Long width, Long height){
+    public FaceFragment(int x, int y, int width, int height){
     	this.x = x;
     	this.y = y;
     	this.width = width;
     	this.height = height;
     }
     
-    public Long getX(){
+    public int getX(){
     	return x;
     }
     
-    public Long getY(){
+    public int getY(){
     	return y;
     }
     
-    public Long getWidth(){
+    public int getWidth(){
     	return width;
     }
     
-    public Long getHeight(){
+    public int getHeight(){
     	return height;
     }
 }

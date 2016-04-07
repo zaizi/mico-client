@@ -1,12 +1,14 @@
 package org.zaizi.mico.client.model.text;
 
+import java.net.URI;
+
+
 public class LinkedEntity {
 	
-	private String entityMention;
+    private String entityMention;
 	private String entityLabel;
 	private String entityType;
 	private String entityReference;
-	
 	private double confidence;
 
 	public String getEntityMention() {
