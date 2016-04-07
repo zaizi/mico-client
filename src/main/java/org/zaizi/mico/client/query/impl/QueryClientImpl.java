@@ -9,6 +9,7 @@ import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.ContentItem;
 import org.zaizi.mico.client.model.face.FaceFragment;
+import org.zaizi.mico.client.model.namespace.FAM;
 import org.zaizi.mico.client.model.text.LinkedEntity;
 import org.zaizi.mico.client.model.text.LinkedEntityBody;
 
@@ -41,7 +42,7 @@ public class QueryClientImpl implements QueryClient
         List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
         try
         {
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
+            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItem.getID());
             processTypeRestriction(queryService, null, "fam:LinkedEntity", null);
             List<Annotation> linkedEntityAnnotations = queryService.execute();
