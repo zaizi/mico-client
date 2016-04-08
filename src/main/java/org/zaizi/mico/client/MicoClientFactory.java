@@ -25,5 +25,4 @@ public class MicoClientFactory {
 	public final StatusChecker createStatusChecker(){
 		return new StatusCheckerImpl(uriBuilder);
 	}
-
 }

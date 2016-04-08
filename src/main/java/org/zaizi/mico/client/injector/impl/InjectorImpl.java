@@ -114,7 +114,9 @@ public class InjectorImpl implements Injector{
             
             final String contentPartUri = node.get("uri").asText();
             
-            ContentPart contentPart = new ContentPart(contentPartUri, mimeType, name);
+            ContentPart contentPart = new ContentPart(contentPartUri);
+            contentPart.setMimeType(mimeType);
+            contentPart.setName(name);
             
             tempFile.delete();
             

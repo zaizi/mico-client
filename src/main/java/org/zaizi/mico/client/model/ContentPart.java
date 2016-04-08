@@ -6,18 +6,23 @@ public class ContentPart {
 	private String mimeType;
 	private String name;
 	
-	
-	public ContentPart(String uri, String mimeType, String name){
+	public ContentPart(String uri){
 		this.uri = uri;
-		this.mimeType = mimeType;
+	}
+	
+	public void setName(String name){
 		this.name = name;
+	}
+	
+	public void setMimeType(String mimeType){
+		this.mimeType = mimeType;
 	}
 	
 	public String getUri(){
 		return uri;
 	}
 	
-	public String getType(){
+	public String getMimeType(){
 		return mimeType;
 	}
 	
