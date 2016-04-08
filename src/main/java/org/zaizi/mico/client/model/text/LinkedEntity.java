@@ -1,7 +1,5 @@
 package org.zaizi.mico.client.model.text;
 
-import java.net.URI;
-
 
 public class LinkedEntity {
 	

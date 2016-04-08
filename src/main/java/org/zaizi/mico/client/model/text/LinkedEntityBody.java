@@ -1,13 +1,10 @@
 package org.zaizi.mico.client.model.text;
 
 import com.github.anno4j.model.Body;
-import com.github.anno4j.model.namespaces.RDF;
 
 import org.openrdf.annotations.Iri;
 import org.openrdf.model.URI;
 import org.zaizi.mico.client.model.namespace.FAM;
-
-import eu.mico.platform.anno4j.model.namespaces.MICO;
 
 @Iri(FAM.LINKED_ENTITY_BODY)
 public interface LinkedEntityBody extends Body
