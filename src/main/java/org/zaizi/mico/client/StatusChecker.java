@@ -10,6 +10,7 @@ public interface StatusChecker {
 	
 	public static final String STATUS_CHECK_PATH = "/broker/status/items";
 	
-	public List<StatusResponse> checkItemStatus(ContentItem contentItem, boolean parts) throws MicoClientException;
+	public List<StatusResponse> checkItemStatus(String contentItemURI, boolean parts) throws MicoClientException;
+
 
 }

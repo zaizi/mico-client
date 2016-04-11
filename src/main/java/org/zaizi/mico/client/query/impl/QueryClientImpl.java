@@ -37,18 +37,22 @@ public class QueryClientImpl implements QueryClient
     }
 
     @Override
-    public List<LinkedEntity> getLinkedEntities(ContentItem contentItem) throws MicoClientException
+    public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException
     {
         List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
         try
         {
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
-                    contentItem.getID());
+            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
+            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart",
+                    contentItemUri);
+            //queryService.addCriteria("oa:hasBody[is-a fam:LinkedEntity]");
             processTypeRestriction(queryService, null, "fam:LinkedEntity", null);
+            
             List<Annotation> linkedEntityAnnotations = queryService.execute();
+            //System.out.println("got annotation results : " + linkedEntityAnnotations.size());
             for (Annotation annotation : linkedEntityAnnotations)
             {
-
+               
                 LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
                 LinkedEntity entity = new LinkedEntity();
                 entity.setConfidence(body.getConfidence());
@@ -65,7 +69,7 @@ public class QueryClientImpl implements QueryClient
         }
         catch (Exception ex)
         {
-            throw new MicoClientException("Exception occurred while retrieving flinked entities from the content item",
+            throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
                     ex);
         }
 
@@ -73,13 +77,13 @@ public class QueryClientImpl implements QueryClient
     }
 
     @Override
-    public List<FaceFragment> getFaceFragments(ContentItem contentItem) throws MicoClientException
+    public List<FaceFragment> getFaceFragments(String contentItemUri) throws MicoClientException
     {
         List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
         try
         {
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
-                    contentItem.getID());
+                    contentItemUri);
             processTypeRestriction(queryService, null, "mico:FaceDetectionBody", null);
             List<Annotation> faceDetectAnnotations = queryService.execute();
             for (Annotation annotation : faceDetectAnnotations)
@@ -111,7 +115,6 @@ public class QueryClientImpl implements QueryClient
                     ex);
         }
         return faceFragments;
-
     }
 
     /**
@@ -128,18 +131,17 @@ public class QueryClientImpl implements QueryClient
         if (selectorTypeRestriction != null)
         {
 
-            qs.addCriteria("oa:hasTarget/oa:hasSelector" + selectorTypeRestriction);
+            qs.addCriteria("oa:hasTarget/oa:hasSelector[is-a " + selectorTypeRestriction + "]");
         }
 
         if (bodyTypeRestriction != null)
         {
-            qs.addCriteria("oa:hasBody" + bodyTypeRestriction);
+            qs.addCriteria("oa:hasBody[is-a " + bodyTypeRestriction+ "]");
         }
 
         if (targetTypeRestriction != null)
         {
-            qs.addCriteria("oa:hasTarget" + targetTypeRestriction);
+            qs.addCriteria("oa:hasTarget[is-a " + targetTypeRestriction+ "]");
         }
     }
-
 }

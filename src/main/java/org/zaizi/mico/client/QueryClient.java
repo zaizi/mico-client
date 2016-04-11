@@ -12,10 +12,9 @@ public interface QueryClient {
 
     public static final String QUERY_SELECT_ENDPONT = "/marmotta/sparql/select";
      
-    public List<LinkedEntity> getLinkedEntities(ContentItem contentItem) throws MicoClientException;
+    public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException;
     
-    public List<FaceFragment> getFaceFragments(ContentItem contentItem) throws MicoClientException;
+    public List<FaceFragment> getFaceFragments(String contentItemUri) throws MicoClientException;
 
-   
 
 }

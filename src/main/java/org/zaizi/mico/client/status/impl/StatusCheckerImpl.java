@@ -24,45 +24,46 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class StatusCheckerImpl implements StatusChecker {
 
-	private static final Logger logger = LoggerFactory.getLogger(StatusCheckerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(StatusCheckerImpl.class);
 	private URIBuilder uriBuilder;
 
 	public StatusCheckerImpl(URIBuilder uriBuilder) {
 		this.uriBuilder = uriBuilder;
 	}
-
+	
 	@Override
-	public List<StatusResponse> checkItemStatus(ContentItem contentItem, boolean parts) throws MicoClientException {
-		try {
-			URIBuilder builderCopy = new URIBuilder(uriBuilder.build().toString());
-			URI checkStatusUri = builderCopy.setPath(STATUS_CHECK_PATH).setParameter("uri", contentItem.getUri())
-					.setParameter("parts", parts ? "true" : "false").build();
-			
-			final HttpGet getRequest = new HttpGet(checkStatusUri);
-			
-			final CloseableHttpClient client = HttpClients.createDefault();
-			final CloseableHttpResponse response = client.execute(getRequest);
-			
-			final String responseBody = EntityUtils.toString(response.getEntity());
-			
-			if (responseBody.isEmpty())
+    public List<StatusResponse> checkItemStatus(String contentItemUri, boolean parts) throws MicoClientException
+    {
+	    try {
+            URIBuilder builderCopy = new URIBuilder(uriBuilder.build().toString());
+            URI checkStatusUri = builderCopy.setPath(STATUS_CHECK_PATH).setParameter("uri", contentItemUri)
+                    .setParameter("parts", parts ? "true" : "false").build();
+            
+            final HttpGet getRequest = new HttpGet(checkStatusUri);
+            
+            final CloseableHttpClient client = HttpClients.createDefault();
+            final CloseableHttpResponse response = client.execute(getRequest);
+            
+            final String responseBody = EntityUtils.toString(response.getEntity());
+            
+            if (responseBody.isEmpty())
                 return Collections.emptyList();
-			
-			ObjectMapper objectMapper = new ObjectMapper();
-			List<StatusResponse> statusResponses = objectMapper.readValue(responseBody, new TypeReference<List<StatusResponse>>(){});
-			
-			return statusResponses;
+            
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<StatusResponse> statusResponses = objectMapper.readValue(responseBody, new TypeReference<List<StatusResponse>>(){});
+            
+            return statusResponses;
 
-		} catch (URISyntaxException e) {
-			logger.error("Invalide URL", e);
-			throw new MicoClientException(e.getMessage());
-		} catch (ClientProtocolException e) {
-			logger.error("Error in sending status check request to mico", e);
-			throw new MicoClientException(e.getMessage());
-		} catch (IOException e) {
-			logger.error("Error in sending status check request to mico", e);
-			throw new MicoClientException(e.getMessage());
-		}
-	}
+        } catch (URISyntaxException e) {
+            logger.error("Invalide URL", e);
+            throw new MicoClientException(e.getMessage());
+        } catch (ClientProtocolException e) {
+            logger.error("Error in sending status check request to mico", e);
+            throw new MicoClientException(e.getMessage());
+        } catch (IOException e) {
+            logger.error("Error in sending status check request to mico", e);
+            throw new MicoClientException(e.getMessage());
+        }
+    }
 
 }
