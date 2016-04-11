@@ -36,9 +36,7 @@ public class MicoClientFactory {
 		QueryClient queryClient = null;
 		try {
 			Anno4j anno4j = new Anno4j();
-			URIBuilder builder = new URIBuilder();
-			builder.setScheme(uriBuilder.getScheme()).setHost(uriBuilder.getHost());
-			SPARQLRepository repo = new SPARQLRepository(builder.build() + QueryClient.QUERY_SELECT_ENDPONT, builder.build()+QueryClient.QUERY_UPDATE_ENDPONT);
+			SPARQLRepository repo = new SPARQLRepository(uriBuilder.build() + QueryClient.QUERY_SELECT_ENDPONT, uriBuilder.build() + QueryClient.QUERY_UPDATE_ENDPONT);
 			repo.setUsernameAndPassword(username, password);
 			repo.initialize();
 			anno4j.setRepository(repo);
