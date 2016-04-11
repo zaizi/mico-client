@@ -27,13 +27,10 @@ public class QueryClientImpl implements QueryClient
 {
 
     private Anno4j anno4j;
-    private QueryService queryService;
-
+  
     public QueryClientImpl(Anno4j anno4j)
     {
         this.anno4j = anno4j;
-        queryService = this.anno4j.createQueryService();
-
     }
 
     @Override
@@ -42,10 +39,10 @@ public class QueryClientImpl implements QueryClient
         List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
         try
         {
+            QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
             queryService.addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItemUri);
-            //queryService.addCriteria("oa:hasBody[is-a fam:LinkedEntity]");
             processTypeRestriction(queryService, null, "fam:LinkedEntity", null);
             
             List<Annotation> linkedEntityAnnotations = queryService.execute();
@@ -82,6 +79,7 @@ public class QueryClientImpl implements QueryClient
         List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
         try
         {
+            QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItemUri);
             processTypeRestriction(queryService, null, "mico:FaceDetectionBody", null);
