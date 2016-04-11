@@ -1,10 +1,10 @@
 package org.zaizi.mico.client.query.impl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.openrdf.model.URI;
 import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.ContentItem;
@@ -56,10 +56,10 @@ public class QueryClientImpl implements QueryClient
                 entity.setEntityLabel(body.getEntityLabel());
                 entity.setEntityMention(body.getEntityMention());
 
-                URI entityReference = body.getEntityReference();
-                entity.setEntityReference(entityReference.stringValue());
-                URI entityType = body.getEntityType();
-                entity.setEntityType(entityType.stringValue());
+                String entityReference = body.getEntityReference();
+                entity.setEntityReference(entityReference);
+                String entityType = body.getEntityType();
+                entity.setEntityType(entityType);
                 linkedEntities.add(entity);
             }
 

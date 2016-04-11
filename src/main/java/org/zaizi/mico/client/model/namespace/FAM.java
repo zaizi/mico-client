@@ -14,6 +14,6 @@ public class FAM
     public final static String ENTITY_REFERENCE = NS + "entity-reference";
     public final static String ENTITY_TYPE = NS + "entity-type";
     public final static String ENTITY_MENTION = NS + "entity-mention";
-    public final static String LINKED_ENTITY_BODY = NS + "LinkedEntityBody";
+    public final static String LINKED_ENTITY = NS + "LinkedEntity";
 
 }

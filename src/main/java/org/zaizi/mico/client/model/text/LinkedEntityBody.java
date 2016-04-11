@@ -1,12 +1,13 @@
 package org.zaizi.mico.client.model.text;
 
+import java.net.URI;
+
 import com.github.anno4j.model.Body;
 
 import org.openrdf.annotations.Iri;
-import org.openrdf.model.URI;
 import org.zaizi.mico.client.model.namespace.FAM;
 
-@Iri(FAM.LINKED_ENTITY_BODY)
+@Iri(FAM.LINKED_ENTITY)
 public interface LinkedEntityBody extends Body
 {
     @Iri(FAM.CONFIDENCE)
@@ -22,10 +23,10 @@ public interface LinkedEntityBody extends Body
     void setEntityLabel(String label); 
     
     @Iri(FAM.ENTITY_TYPE)
-    void setEntityType(URI type);
+    void setEntityType(String type);
 
     @Iri(FAM.ENTITY_TYPE)
-    URI getEntityType();
+    String getEntityType();
     
     @Iri(FAM.ENTITY_MENTION) 
     void setEntityMention(String mention);
@@ -34,9 +35,9 @@ public interface LinkedEntityBody extends Body
     String getEntityMention();
     
     @Iri(FAM.ENTITY_REFERENCE) 
-    void setEntityReference(URI reference);
+    void setEntityReference(String reference);
     
     @Iri(FAM.ENTITY_REFERENCE) 
-    URI getEntityReference();
+    String getEntityReference();
     
 }

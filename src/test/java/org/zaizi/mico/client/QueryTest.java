@@ -1,6 +1,5 @@
 package org.zaizi.mico.client;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
