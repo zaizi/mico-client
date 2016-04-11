@@ -1,9 +1,7 @@
 package org.zaizi.mico.client;
 
+
 import org.apache.http.client.utils.URIBuilder;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.sparql.SPARQLRepository;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.injector.impl.InjectorImpl;
@@ -18,39 +16,40 @@ import com.github.anno4j.Anno4j;
  *
  */
 public class MicoClientFactory {
-	
+
 	private URIBuilder uriBuilder;
-	private String host;
 	private String username;
 	String password;
-	
-	public MicoClientFactory(String host, String username, String password){
+
+	public MicoClientFactory(String host, String username, String password) {
 		uriBuilder = new URIBuilder();
-		uriBuilder.setScheme("http").setHost(host).setUserInfo(username, password);    
+		uriBuilder.setScheme("http").setHost(host).setUserInfo(username, password);
+		this.username = username;
+		this.password = password;
 	}
-	
-	public final Injector createInjectorClient(){
+
+	public final Injector createInjectorClient() {
 		return new InjectorImpl(uriBuilder);
 	}
-	
-	public final QueryClient createQueryServiceClient() throws MicoClientException{
-	    QueryClient queryClient = null;
-	    try
-        {
-	        SPARQLRepository repo = new SPARQLRepository(host + QueryClient.QUERY_SELECT_ENDPONT);
-	        repo.setUsernameAndPassword(username, password);
-	        repo.initialize();
-	        Anno4j anno4j = new Anno4j(repo);
-	        queryClient = new QueryClientImpl(anno4j);
-        }
-        catch (Exception ex)
-        {
-            throw new MicoClientException("Exception occured when creating QueryClient", ex);
-        }  
-	    return queryClient;
+
+	public final QueryClient createQueryServiceClient() throws MicoClientException {
+		QueryClient queryClient = null;
+		try {
+			Anno4j anno4j = new Anno4j();
+			URIBuilder builder = new URIBuilder();
+			builder.setScheme(uriBuilder.getScheme()).setHost(uriBuilder.getHost());
+			SPARQLRepository repo = new SPARQLRepository(builder.build() + QueryClient.QUERY_SELECT_ENDPONT, builder.build()+QueryClient.QUERY_UPDATE_ENDPONT);
+			repo.setUsernameAndPassword(username, password);
+			repo.initialize();
+			anno4j.setRepository(repo);
+			queryClient = new QueryClientImpl(anno4j);
+		} catch (Exception ex) {
+			throw new MicoClientException("Exception occured when creating QueryClient", ex);
+		}
+		return queryClient;
 	}
-	
-	public final StatusChecker createStatusChecker(){
+
+	public final StatusChecker createStatusChecker() {
 		return new StatusCheckerImpl(uriBuilder);
 	}
 }
