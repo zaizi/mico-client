@@ -1,13 +1,12 @@
 package org.zaizi.mico.client.query.impl;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
-import org.zaizi.mico.client.model.ContentItem;
 import org.zaizi.mico.client.model.face.FaceFragment;
 import org.zaizi.mico.client.model.namespace.FAM;
 import org.zaizi.mico.client.model.text.LinkedEntity;
@@ -23,12 +22,12 @@ import com.github.anno4j.querying.QueryService;
 
 import eu.mico.platform.anno4j.model.namespaces.MICO;
 
-public class QueryClientImpl implements QueryClient
+public class Anno4jQueryClientImpl implements QueryClient
 {
 
     private Anno4j anno4j;
   
-    public QueryClientImpl(Anno4j anno4j)
+    public Anno4jQueryClientImpl(Anno4j anno4j)
     {
         this.anno4j = anno4j;
     }
@@ -44,9 +43,9 @@ public class QueryClientImpl implements QueryClient
             queryService.addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItemUri);
             processTypeRestriction(queryService, null, "fam:LinkedEntity", null);
+            //processBodyResourcePathValue(queryService, "fam:entity-type", "skos:Concept");
             
             List<Annotation> linkedEntityAnnotations = queryService.execute();
-            //System.out.println("got annotation results : " + linkedEntityAnnotations.size());
             for (Annotation annotation : linkedEntityAnnotations)
             {
                
@@ -122,8 +121,9 @@ public class QueryClientImpl implements QueryClient
      * @param selectorTypeRestriction
      * @param bodyTypeRestriction
      * @param targetTypeRestriction
+     * @return query-service object 
      */
-    private void processTypeRestriction(QueryService qs, String selectorTypeRestriction, String bodyTypeRestriction,
+    private QueryService processTypeRestriction(QueryService qs, String selectorTypeRestriction, String bodyTypeRestriction,
             String targetTypeRestriction)
     {
         if (selectorTypeRestriction != null)
@@ -141,5 +141,56 @@ public class QueryClientImpl implements QueryClient
         {
             qs.addCriteria("oa:hasTarget[is-a " + targetTypeRestriction+ "]");
         }
+        return qs;
     }
+    
+    //eg: foaf:interest[rdf:type is ex:Food]
+    /**
+     * @param qs Query Service
+     * @param condition eg : rdf:type
+     * @param value eg : ex:Food
+     * @return qs
+     */
+    private QueryService processBodyResourcePathValue(QueryService qs, String condition, String value)
+    {
+        qs.addCriteria("oa:hasBody[" + condition + " is " + value + "]");
+        return qs;
+    }
+    
+    //eg: foaf:interest[rdf:type is ex:Food & rdf:type is ex:Drink]
+    /**
+     * @param qs Query Service
+     * @param pathValueMap
+     * @param conjunction AND
+     * @param disjunction OR
+     * @return qs
+     */
+    private QueryService processBodyResourcePathValueChains(QueryService qs, Map<String,String> pathValueMap, boolean conjunction, boolean disjunction)
+    {
+        String criteriaBegin = "oa:hasBody[";
+        String criteriaEnd = "]";
+        String criteriaChainString = "";
+        Object[] paths = pathValueMap.keySet().toArray();
+        for (int index = 0; index < paths.length; index++)
+        {
+            if (index > 0)
+            {
+                if (conjunction)
+                {
+                    criteriaChainString += " & ";
+                }
+                else if (disjunction)
+                {
+                    criteriaChainString += " | ";
+                }
+            }
+            String key = (String) paths[index];
+            String val = pathValueMap.get(key);
+            criteriaChainString += key + " is " + val;
+        }
+        String criteria = criteriaBegin + criteriaChainString + criteriaEnd;
+        qs.addCriteria(criteria);
+        return qs;
+    }
+     
 }

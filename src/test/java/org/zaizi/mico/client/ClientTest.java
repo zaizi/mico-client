@@ -28,15 +28,15 @@ public class ClientTest {
 
 //	@Test
 	public void testInject() throws MicoClientException, FileNotFoundException {
-		String filePath = "/Users/djayakody/Documents/zaizi/mico/test_mico/test.txt";
-		InputStream is = new FileInputStream(filePath);
+	    String testResource = "text1.txt";
+        InputStream is = getClass().getResourceAsStream("/"+testResource);
 
-		 Injector injector = micoClientfactory.createInjectorClient();
-		 ContentItem ci = injector.createContentItem();
-		 ContentPart cp = injector.addContentPart(ci, "text/plain", filePath,
-		 is);
-		 ci.addContentPart(cp);
-		 injector.submitContentItem(ci);
+        Injector injector = micoClientfactory.createInjectorClient();
+        ContentItem ci = injector.createContentItem();
+        ContentPart cp = injector.addContentPart(ci, "text/plain", testResource,
+        is);
+        ci.addContentPart(cp);
+        injector.submitContentItem(ci);
 
 		
 		StatusChecker statusChecker = micoClientfactory.createStatusChecker();

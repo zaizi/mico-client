@@ -2,10 +2,12 @@ package org.zaizi.mico.client;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.ContentItem;
 import org.zaizi.mico.client.model.ContentPart;
@@ -28,17 +30,17 @@ public class QueryTest {
 		micoClientfactory = new MicoClientFactory(MICO_HOST, MICO_USER, MICO_PASSWORD);
 	}
 	
-	@Test
+	
     public void testInject() throws MicoClientException, FileNotFoundException {
 		String testResource = "text1.txt";
 		InputStream is = getClass().getResourceAsStream("/"+testResource);
 
-         Injector injector = micoClientfactory.createInjectorClient();
-         ContentItem ci = injector.createContentItem();
-         ContentPart cp = injector.addContentPart(ci, "text/plain", testResource,
-         is);
-         ci.addContentPart(cp);
-         injector.submitContentItem(ci);
+        Injector injector = micoClientfactory.createInjectorClient();
+        ContentItem ci = injector.createContentItem();
+        ContentPart cp = injector.addContentPart(ci, "text/plain", testResource,
+        is);
+        ci.addContentPart(cp);
+        injector.submitContentItem(ci);
 
         
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
@@ -60,7 +62,9 @@ public class QueryTest {
 	{	
 		QueryClient queryClient = micoClientfactory.createQueryServiceClient();
 		StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-		String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/92b42302-7608-47e0-a5a5-8b457cf7e3da";
+		//String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/92b42302-7608-47e0-a5a5-8b457cf7e3da";
+		String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/0c47da8a-50ba-498a-959d-e338f4653aad";
+		List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
 		while (true) {
 			List<StatusResponse> statusResponses = statusChecker.checkItemStatus(contentItemUri, true);
 			if (!statusResponses.isEmpty()) {
@@ -75,20 +79,23 @@ public class QueryTest {
 						System.out.println("Entity Type: "+linkedEntity.getEntityType());
 						System.out.println("Confidence: "+linkedEntity.getConfidence());
 						System.out.println("------------------------------------------");
+						entities.add(linkedEntity);
 					}
 					break;
 				}
 			}
 
 		}
+		assertFalse(entities.isEmpty());	
 	}
 	
-	@Test
+	
 	public void testFaceDetectionQuery() throws MicoClientException
 	{
 	    QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
         String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/540de56b-6d61-46f9-b541-81e743bc4dbb";
+        List<FaceFragment> faceFragmentsArray = new ArrayList<FaceFragment>();
         while (true) {
             List<StatusResponse> statusResponses = statusChecker.checkItemStatus(contentItemUri, true);
             if (!statusResponses.isEmpty()) {
@@ -102,14 +109,14 @@ public class QueryTest {
                         System.out.println("X : " + fragment.getX());
                         System.out.println("Y : " + fragment.getY());
                         System.out.println("------------------------------------");
-                        
+                        faceFragmentsArray.add(fragment);
                     }
                     break;
                 }
             }
 
         }
-        
+        assertFalse(faceFragmentsArray.isEmpty());
 	}
 
 }

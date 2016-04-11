@@ -5,7 +5,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.openrdf.repository.sparql.SPARQLRepository;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.injector.impl.InjectorImpl;
-import org.zaizi.mico.client.query.impl.QueryClientImpl;
+import org.zaizi.mico.client.query.impl.Anno4jQueryClientImpl;
 import org.zaizi.mico.client.status.impl.StatusCheckerImpl;
 
 import com.github.anno4j.Anno4j;
@@ -40,7 +40,7 @@ public class MicoClientFactory {
 			repo.setUsernameAndPassword(username, password);
 			repo.initialize();
 			anno4j.setRepository(repo);
-			queryClient = new QueryClientImpl(anno4j);
+			queryClient = new Anno4jQueryClientImpl(anno4j);
 		} catch (Exception ex) {
 			throw new MicoClientException("Exception occured when creating QueryClient", ex);
 		}
