@@ -1,7 +1,5 @@
 package org.zaizi.mico.client;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.zaizi.mico.client.exception.MicoClientException;
-import org.zaizi.mico.client.model.ContentItem;
-import org.zaizi.mico.client.model.ContentPart;
 import org.zaizi.mico.client.model.face.FaceFragment;
 import org.zaizi.mico.client.model.text.LinkedEntity;
 import org.zaizi.mico.client.status.impl.StatusResponse;
@@ -29,33 +25,6 @@ public class QueryTest {
 	public static void startClient() {
 		micoClientfactory = new MicoClientFactory(MICO_HOST, MICO_USER, MICO_PASSWORD);
 	}
-	
-	
-    public void testInject() throws MicoClientException, FileNotFoundException {
-		String testResource = "text1.txt";
-		InputStream is = getClass().getResourceAsStream("/"+testResource);
-
-        Injector injector = micoClientfactory.createInjectorClient();
-        ContentItem ci = injector.createContentItem();
-        ContentPart cp = injector.addContentPart(ci, "text/plain", testResource,
-        is);
-        ci.addContentPart(cp);
-        injector.submitContentItem(ci);
-
-        
-        StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        while (true) {
-            List<StatusResponse> statusResponses = statusChecker.checkItemStatus(ci.getUri(), true);
-            if(!statusResponses.isEmpty()){
-                StatusResponse statusResponse = statusResponses.get(0);
-                System.out.println(statusResponse.getUri() + ", " + statusResponse.isFinished());
-                if (statusResponse.isFinished()) {
-                    break;
-                }
-            }
-            
-        }
-    }
 	
 	@Test
 	public void testEntityQuery() throws MicoClientException
