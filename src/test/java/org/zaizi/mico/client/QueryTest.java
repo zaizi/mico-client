@@ -106,9 +106,11 @@ public class QueryTest
         assertFalse(entities.isEmpty());
     }
 
-    public void testFaceDetectionQuery() throws MicoClientException
-    {
-        QueryClient queryClient = micoClientfactory.createQueryServiceClient();
+
+	
+	public void testFaceDetectionQuery() throws MicoClientException
+	{
+	    QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
         String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/540de56b-6d61-46f9-b541-81e743bc4dbb";
         List<FaceFragment> faceFragmentsArray = new ArrayList<FaceFragment>();

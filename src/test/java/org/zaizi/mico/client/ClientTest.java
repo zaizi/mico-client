@@ -1,6 +1,5 @@
 package org.zaizi.mico.client;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -21,12 +20,12 @@ public class ClientTest {
 	private static MicoClientFactory micoClientfactory;
 	
 
-//	@BeforeClass
+    @BeforeClass
 	public static void startClient() {
 		micoClientfactory = new MicoClientFactory(MICO_HOST, MICO_USER, MICO_PASSWORD);
 	}
 
-//	@Test
+    @Test
 	public void testInject() throws MicoClientException, FileNotFoundException {
 	    String testResource = "text1.txt";
         InputStream is = getClass().getResourceAsStream("/"+testResource);
