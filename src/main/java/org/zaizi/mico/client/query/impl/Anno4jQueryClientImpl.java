@@ -11,6 +11,7 @@ import org.zaizi.mico.client.model.face.FaceFragment;
 import org.zaizi.mico.client.model.namespace.FAM;
 import org.zaizi.mico.client.model.text.LinkedEntity;
 import org.zaizi.mico.client.model.text.LinkedEntityBody;
+import org.zaizi.mico.client.query.util.LDPathUtil;
 
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.model.Annotation;
@@ -26,7 +27,7 @@ public class Anno4jQueryClientImpl implements QueryClient
 {
 
     private Anno4j anno4j;
-  
+
     public Anno4jQueryClientImpl(Anno4j anno4j)
     {
         this.anno4j = anno4j;
@@ -40,26 +41,12 @@ public class Anno4jQueryClientImpl implements QueryClient
         {
             QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
-            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart",
-                    contentItemUri);
-            processTypeRestriction(queryService, null, "fam:LinkedEntity", null);
-            //processBodyResourcePathValue(queryService, "fam:entity-type", "skos:Concept");
-            
+            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
+            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "fam:LinkedEntity", null));
             List<Annotation> linkedEntityAnnotations = queryService.execute();
             for (Annotation annotation : linkedEntityAnnotations)
             {
-               
-                LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
-                LinkedEntity entity = new LinkedEntity();
-                entity.setConfidence(body.getConfidence());
-                entity.setEntityLabel(body.getEntityLabel());
-                entity.setEntityMention(body.getEntityMention());
-
-                String entityReference = body.getEntityReference();
-                entity.setEntityReference(entityReference);
-                String entityType = body.getEntityType();
-                entity.setEntityType(entityType);
-                linkedEntities.add(entity);
+                linkedEntities.add(getLinkedEntityFromAnnotation(annotation));
             }
 
         }
@@ -81,28 +68,12 @@ public class Anno4jQueryClientImpl implements QueryClient
             QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItemUri);
-            processTypeRestriction(queryService, null, "mico:FaceDetectionBody", null);
+            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "mico:FaceDetectionBody", null));
             List<Annotation> faceDetectAnnotations = queryService.execute();
             for (Annotation annotation : faceDetectAnnotations)
             {
-                Set<Target> targets = annotation.getTarget();
-                for (Target target : targets)
-                {
-                    if (target instanceof SpecificResource)
-                    {
-                        Selector selector = ((SpecificResource) target).getSelector();
-                        if (selector instanceof FragmentSelector)
-                        {
-                            int x = ((FragmentSelector) selector).getX();
-                            int y = ((FragmentSelector) selector).getY();
-                            int w = ((FragmentSelector) selector).getWidth();
-                            int h = ((FragmentSelector) selector).getHeight();
-                            FaceFragment faceFragment = new FaceFragment(x, y, w, h);
-                            faceFragments.add(faceFragment);
-                        }
-
-                    }
-                }
+                List<FaceFragment> fragments = getFaceFragmentsFromAnnotation(annotation);
+                faceFragments.addAll(fragments);
             }
 
         }
@@ -114,83 +85,106 @@ public class Anno4jQueryClientImpl implements QueryClient
         return faceFragments;
     }
 
-    /**
-     * Checks if type restrictions were set and adds them to the QueryService object.
-     * 
-     * @param qs The anno4j QueryService object
-     * @param selectorTypeRestriction
-     * @param bodyTypeRestriction
-     * @param targetTypeRestriction
-     * @return query-service object 
-     */
-    private QueryService processTypeRestriction(QueryService qs, String selectorTypeRestriction, String bodyTypeRestriction,
-            String targetTypeRestriction)
+    @Override
+    public List<LinkedEntity> getLinkedEntities(String contentItemUri, String... criterias) throws MicoClientException
     {
-        if (selectorTypeRestriction != null)
+        List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
+        try
         {
-
-            qs.addCriteria("oa:hasTarget/oa:hasSelector[is-a " + selectorTypeRestriction + "]");
-        }
-
-        if (bodyTypeRestriction != null)
-        {
-            qs.addCriteria("oa:hasBody[is-a " + bodyTypeRestriction+ "]");
-        }
-
-        if (targetTypeRestriction != null)
-        {
-            qs.addCriteria("oa:hasTarget[is-a " + targetTypeRestriction+ "]");
-        }
-        return qs;
-    }
-    
-    //eg: foaf:interest[rdf:type is ex:Food]
-    /**
-     * @param qs Query Service
-     * @param condition eg : rdf:type
-     * @param value eg : ex:Food
-     * @return qs
-     */
-    private QueryService processBodyResourcePathValue(QueryService qs, String condition, String value)
-    {
-        qs.addCriteria("oa:hasBody[" + condition + " is " + value + "]");
-        return qs;
-    }
-    
-    //eg: foaf:interest[rdf:type is ex:Food & rdf:type is ex:Drink]
-    /**
-     * @param qs Query Service
-     * @param pathValueMap
-     * @param conjunction AND
-     * @param disjunction OR
-     * @return qs
-     */
-    private QueryService processBodyResourcePathValueChains(QueryService qs, Map<String,String> pathValueMap, boolean conjunction, boolean disjunction)
-    {
-        String criteriaBegin = "oa:hasBody[";
-        String criteriaEnd = "]";
-        String criteriaChainString = "";
-        Object[] paths = pathValueMap.keySet().toArray();
-        for (int index = 0; index < paths.length; index++)
-        {
-            if (index > 0)
+            QueryService queryService = anno4j.createQueryService();
+            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
+            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
+            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "fam:LinkedEntity", null));
+            for (String criteria : criterias)
             {
-                if (conjunction)
-                {
-                    criteriaChainString += " & ";
-                }
-                else if (disjunction)
-                {
-                    criteriaChainString += " | ";
-                }
+                queryService.addCriteria(criteria);
             }
-            String key = (String) paths[index];
-            String val = pathValueMap.get(key);
-            criteriaChainString += key + " is " + val;
+            // processBodyResourcePathValue(queryService, "fam:entity-type", "skos:Concept");
+
+            List<Annotation> linkedEntityAnnotations = queryService.execute();
+            for (Annotation annotation : linkedEntityAnnotations)
+            {
+                linkedEntities.add(getLinkedEntityFromAnnotation(annotation));
+            }
+
         }
-        String criteria = criteriaBegin + criteriaChainString + criteriaEnd;
-        qs.addCriteria(criteria);
-        return qs;
+        catch (Exception ex)
+        {
+            throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
+                    ex);
+        }
+
+        return linkedEntities;
     }
-     
+
+    @Override
+    public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException
+    {
+        List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
+        try
+        {
+            QueryService queryService = anno4j.createQueryService();
+            queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
+                    contentItemUri);
+            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "mico:FaceDetectionBody", null));
+            for (String criteria : criterias)
+            {
+                queryService.addCriteria(criteria);
+            }
+            List<Annotation> faceDetectAnnotations = queryService.execute();
+            for (Annotation annotation : faceDetectAnnotations)
+            {
+                List<FaceFragment> fragments = getFaceFragmentsFromAnnotation(annotation);
+                faceFragments.addAll(fragments);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw new MicoClientException("Exception occurred while retrieving face fragments from the content item",
+                    ex);
+        }
+        return faceFragments;
+    }
+
+    private LinkedEntity getLinkedEntityFromAnnotation(Annotation annotation)
+    {
+        LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
+        LinkedEntity entity = new LinkedEntity();
+        entity.setConfidence(body.getConfidence());
+        entity.setEntityLabel(body.getEntityLabel());
+        entity.setEntityMention(body.getEntityMention());
+
+        String entityReference = body.getEntityReference();
+        entity.setEntityReference(entityReference);
+        String entityType = body.getEntityType();
+        entity.setEntityType(entityType);
+        return entity;
+    }
+
+    private List<FaceFragment> getFaceFragmentsFromAnnotation(Annotation annotation)
+    {
+
+        List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
+        Set<Target> targets = annotation.getTarget();
+        for (Target target : targets)
+        {
+            if (target instanceof SpecificResource)
+            {
+                Selector selector = ((SpecificResource) target).getSelector();
+                if (selector instanceof FragmentSelector)
+                {
+                    int x = ((FragmentSelector) selector).getX();
+                    int y = ((FragmentSelector) selector).getY();
+                    int w = ((FragmentSelector) selector).getWidth();
+                    int h = ((FragmentSelector) selector).getHeight();
+                    FaceFragment faceFragment = new FaceFragment(x, y, w, h);
+                    faceFragments.add(faceFragment);
+                }
+
+            }
+        }
+        return faceFragments;
+    }
+
 }

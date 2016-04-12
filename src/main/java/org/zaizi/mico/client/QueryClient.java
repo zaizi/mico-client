@@ -1,6 +1,7 @@
 package org.zaizi.mico.client;
 
 import java.util.List;
+import java.util.Map;
 
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.ContentItem;
@@ -14,8 +15,11 @@ public interface QueryClient {
     public static final String QUERY_UPDATE_ENDPONT = "/marmotta/sparql/update";
      
     public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException;
+    public List<LinkedEntity> getLinkedEntities(String contentItemUri, String... criterias) throws MicoClientException;
     
     public List<FaceFragment> getFaceFragments(String contentItemUri) throws MicoClientException;
+    public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException;
 
+    
 
 }
