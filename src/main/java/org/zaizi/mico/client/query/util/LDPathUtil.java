@@ -42,9 +42,10 @@ public class LDPathUtil
     }
 
     /**
-     * eg: PATH & PATH
+     * PATH & PATH
+     * eg: foaf:interest & foaf:topic_interest
      * @param paths
-     * @return
+     * @return criteria string
      */
     public static String getIntersections(String... paths)
     {
@@ -64,9 +65,10 @@ public class LDPathUtil
     }
 
     /**
-     * eg: PATH | PATH
+     * PATH | PATH
+     * eg: foaf:knows/foaf:name | foaf:knows/rdfs:label
      * @param paths
-     * @return
+     * @return criteria string
      */
     public static String getUnions(String... paths)
     {
@@ -85,30 +87,43 @@ public class LDPathUtil
         return pathString;
     }
 
-    // eg: foaf:interest[rdf:type is ex:Food]
     /**
+     * eg: foaf:interest[rdf:type is ex:Food]
      * @param path eg: oa:hasBody
      * @param testCondition eg : fam:entity-type
      * @param testValue eg : skos:Concept
+     * @param notFilter NOT filter (!) to negate the path value test
      * @return criteria string
      */
-    public static String getResourcePathValueTest(String path, String testCondition, String testValue)
+    public static String getResourcePathValueTest(String path, String testCondition, String testValue, boolean notFilter)
     {
-        String criteria = path + "[" + testCondition + " is " + testValue + "]";
+        String filter = "";
+        if (notFilter)
+        {
+            filter = "!";
+        }
+
+        String criteria = path + "[" + filter + "(" + testCondition + " is " + testValue + ")]";
         return criteria;
     }
 
-    // eg: foaf:interest[rdf:type is ex:Food & rdf:type is ex:Drink]
     /**
+     * eg: foaf:interest[rdf:type is ex:Food & rdf:type is ex:Drink]
      * @param path eg: oa:hasBody
      * @param testsMap
      * @param conjunction AND
      * @param disjunction OR
+     * @param notFilter NOT filter (!) to negate the path value test
      * @return criteria string
      */
     public static String getResourcePathValueTests(String path, Map<String, String> testsMap, boolean conjunction,
-            boolean disjunction)
+            boolean disjunction, boolean notFilter)
     {
+        String filter = "";
+        if (notFilter)
+        {
+            filter = "!";
+        }
         String criteriaBegin = path + "[";
         String criteriaEnd = "]";
         String criteriaChainString = "";
@@ -128,7 +143,7 @@ public class LDPathUtil
             }
             String key = (String) paths[index];
             String val = testsMap.get(key);
-            criteriaChainString += key + " is " + val;
+            criteriaChainString += filter + "(" + key + " is " + val + ")";
         }
         String criteria = criteriaBegin + criteriaChainString + criteriaEnd;
         return criteria;

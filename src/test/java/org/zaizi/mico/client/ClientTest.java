@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.ContentItem;
 import org.zaizi.mico.client.model.ContentPart;
@@ -18,7 +20,8 @@ public class ClientTest {
 	private static final String MICO_PASSWORD = "7onjhMcFG1kf";
 
 	private static MicoClientFactory micoClientfactory;
-	
+    private static final Logger logger = LoggerFactory.getLogger(ClientTest.class);
+
 
     @BeforeClass
 	public static void startClient() {
@@ -43,7 +46,7 @@ public class ClientTest {
 			List<StatusResponse> statusResponses = statusChecker.checkItemStatus(ci.getUri(), true);
 			if(!statusResponses.isEmpty()){
 				StatusResponse statusResponse = statusResponses.get(0);
-				System.out.println(statusResponse.getUri() + ", " + statusResponse.isFinished());
+				logger.info(statusResponse.getUri() + ", " + statusResponse.isFinished());
 				if (statusResponse.isFinished()) {
 					break;
 				}

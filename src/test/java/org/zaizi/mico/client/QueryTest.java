@@ -12,7 +12,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zaizi.mico.client.exception.MicoClientException;
+import org.zaizi.mico.client.injector.impl.InjectorImpl;
 import org.zaizi.mico.client.model.ContentItem;
 import org.zaizi.mico.client.model.ContentPart;
 import org.zaizi.mico.client.model.face.FaceFragment;
@@ -30,6 +33,8 @@ public class QueryTest
     // http://demo4.mico-project.eu:8080/marmotta/sparql/select
 
     private static MicoClientFactory micoClientfactory;
+    private static final Logger logger = LoggerFactory.getLogger(QueryTest.class);
+
 
     @BeforeClass
     public static void startClient()
@@ -37,41 +42,49 @@ public class QueryTest
         micoClientfactory = new MicoClientFactory(MICO_HOST, MICO_USER, MICO_PASSWORD);
     }
 
-    public void testInject() throws MicoClientException, FileNotFoundException
-    {
-        String testResource = "text1.txt";
-        InputStream is = getClass().getResourceAsStream("/" + testResource);
-
-        Injector injector = micoClientfactory.createInjectorClient();
-        ContentItem ci = injector.createContentItem();
-        ContentPart cp = injector.addContentPart(ci, "text/plain", testResource, is);
-        ci.addContentPart(cp);
-        injector.submitContentItem(ci);
-
-        StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        while (true)
-        {
-            List<StatusResponse> statusResponses = statusChecker.checkItemStatus(ci.getUri(), true);
-            if (!statusResponses.isEmpty())
-            {
-                StatusResponse statusResponse = statusResponses.get(0);
-                System.out.println(statusResponse.getUri() + ", " + statusResponse.isFinished());
-                if (statusResponse.isFinished())
-                {
-                    break;
-                }
-            }
-
-        }
-    }
-
+ 
     @Test
     public void testEntityQuery() throws MicoClientException
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        // String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/92b42302-7608-47e0-a5a5-8b457cf7e3da";
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/0c47da8a-50ba-498a-959d-e338f4653aad";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
+        List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
+        while (true)
+        {
+            List<StatusResponse> statusResponses = statusChecker.checkItemStatus(contentItemUri, true);
+            if (!statusResponses.isEmpty())
+            {
+                StatusResponse statusResponse = statusResponses.get(0);
+                if (statusResponse.isFinished())
+                { 
+                    List<LinkedEntity> linkedEntities = queryClient.getLinkedEntities(contentItemUri);
+                    logger.info("Number of linked entities retrieved: " + linkedEntities.size());
+                    for (LinkedEntity linkedEntity : linkedEntities)
+                    {
+                        logger.info("Entity Label: " + linkedEntity.getEntityLabel());
+                        logger.info("Entity Mention: " + linkedEntity.getEntityMention());
+                        logger.info("Entity Reference: " + linkedEntity.getEntityReference());
+                        logger.info("Entity Type: " + linkedEntity.getEntityType());
+                        logger.info("Confidence: " + linkedEntity.getConfidence());
+                        logger.info("------------------------------------------");
+                        entities.add(linkedEntity);
+                    }
+                    break;
+                }
+            }
+
+        }
+        assertFalse(entities.isEmpty());
+    }
+
+
+    
+    public void testFilteredEntityQuery() throws MicoClientException
+    {
+        QueryClient queryClient = micoClientfactory.createQueryServiceClient();
+        StatusChecker statusChecker = micoClientfactory.createStatusChecker();
+        String contentItemUri = " http://demo4.mico-project.eu:8080/marmotta/a9a84467-730e-4b43-b097-344356a637ed";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
         {
@@ -86,16 +99,16 @@ public class QueryTest
                     
                     
                     List<LinkedEntity> linkedEntities = queryClient.getLinkedEntities(contentItemUri,
-                            LDPathUtil.getResourcePathValueTests("oa:hasBody", pathValues, true, false));
-                    System.out.println("Number of linked entities retrieved: " + linkedEntities.size());
+                            LDPathUtil.getResourcePathValueTests("oa:hasBody", pathValues, true, false, false));
+                    logger.info("Number of linked entities with skos:Concept type retrieved: " + linkedEntities.size());
                     for (LinkedEntity linkedEntity : linkedEntities)
                     {
-                        System.out.println("Entity Label: " + linkedEntity.getEntityLabel());
-                        System.out.println("Entity Mention: " + linkedEntity.getEntityMention());
-                        System.out.println("Entity Reference: " + linkedEntity.getEntityReference());
-                        System.out.println("Entity Type: " + linkedEntity.getEntityType());
-                        System.out.println("Confidence: " + linkedEntity.getConfidence());
-                        System.out.println("------------------------------------------");
+                        logger.info("Entity Label: " + linkedEntity.getEntityLabel());
+                        logger.info("Entity Mention: " + linkedEntity.getEntityMention());
+                        logger.info("Entity Reference: " + linkedEntity.getEntityReference());
+                        logger.info("Entity Type: " + linkedEntity.getEntityType());
+                        logger.info("Confidence: " + linkedEntity.getConfidence());
+                        logger.info("------------------------------------------");
                         entities.add(linkedEntity);
                     }
                     break;
@@ -105,8 +118,7 @@ public class QueryTest
         }
         assertFalse(entities.isEmpty());
     }
-
-
+    
 	
 	public void testFaceDetectionQuery() throws MicoClientException
 	{
@@ -123,14 +135,14 @@ public class QueryTest
                 if (statusResponse.isFinished())
                 {
                     List<FaceFragment> faceFragments = queryClient.getFaceFragments(contentItemUri);
-                    System.out.println("Number of face fragments retrieved : " + faceFragments.size());
+                    logger.info("Number of face fragments retrieved : " + faceFragments.size());
                     for (FaceFragment fragment : faceFragments)
                     {
-                        System.out.println("width : " + fragment.getWidth());
-                        System.out.println("height: " + fragment.getHeight());
-                        System.out.println("X : " + fragment.getX());
-                        System.out.println("Y : " + fragment.getY());
-                        System.out.println("------------------------------------");
+                        logger.info("width : " + fragment.getWidth());
+                        logger.info("height: " + fragment.getHeight());
+                        logger.info("X : " + fragment.getX());
+                        logger.info("Y : " + fragment.getY());
+                        logger.info("------------------------------------");
                         faceFragmentsArray.add(fragment);
                     }
                     break;
