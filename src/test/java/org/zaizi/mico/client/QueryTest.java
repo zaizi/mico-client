@@ -1,7 +1,5 @@
 package org.zaizi.mico.client;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +13,6 @@ import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zaizi.mico.client.exception.MicoClientException;
-import org.zaizi.mico.client.injector.impl.InjectorImpl;
-import org.zaizi.mico.client.model.ContentItem;
-import org.zaizi.mico.client.model.ContentPart;
 import org.zaizi.mico.client.model.face.FaceFragment;
 import org.zaizi.mico.client.model.text.LinkedEntity;
 import org.zaizi.mico.client.query.util.LDPathUtil;

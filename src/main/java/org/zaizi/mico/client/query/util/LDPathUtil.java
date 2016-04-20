@@ -19,7 +19,7 @@ public class LDPathUtil
      * @param targetTypeRestriction
      * @return criteria string
      */
-    public static String getTypeRestriction(String selectorTypeRestriction, String bodyTypeRestriction,
+    public static String getAnnotationTypeRestriction(String selectorTypeRestriction, String bodyTypeRestriction,
             String targetTypeRestriction)
     {
         String criteria = "";

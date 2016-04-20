@@ -42,7 +42,7 @@ public class Anno4jQueryClientImpl implements QueryClient
             QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
             queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
-            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "fam:LinkedEntity", null));
+            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "fam:LinkedEntity", null));
             List<Annotation> linkedEntityAnnotations = queryService.execute();
             for (Annotation annotation : linkedEntityAnnotations)
             {
@@ -68,7 +68,7 @@ public class Anno4jQueryClientImpl implements QueryClient
             QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItemUri);
-            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "mico:FaceDetectionBody", null));
+            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "mico:FaceDetectionBody", null));
             List<Annotation> faceDetectAnnotations = queryService.execute();
             for (Annotation annotation : faceDetectAnnotations)
             {
@@ -94,7 +94,7 @@ public class Anno4jQueryClientImpl implements QueryClient
             QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
             queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
-            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "fam:LinkedEntity", null));
+            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "fam:LinkedEntity", null));
             for (String criteria : criterias)
             {
                 queryService.addCriteria(criteria);
@@ -126,7 +126,7 @@ public class Anno4jQueryClientImpl implements QueryClient
             QueryService queryService = anno4j.createQueryService();
             queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
                     contentItemUri);
-            queryService.addCriteria(LDPathUtil.getTypeRestriction(null, "mico:FaceDetectionBody", null));
+            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "mico:FaceDetectionBody", null));
             for (String criteria : criterias)
             {
                 queryService.addCriteria(criteria);
