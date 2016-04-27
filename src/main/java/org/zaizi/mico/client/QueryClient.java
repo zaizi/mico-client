@@ -11,8 +11,8 @@ import org.zaizi.mico.client.model.text.LinkedEntity;
 
 public interface QueryClient {
 
-    public static final String QUERY_SELECT_ENDPONT = "/marmotta/sparql/select";
-    public static final String QUERY_UPDATE_ENDPONT = "/marmotta/sparql/update";
+    public static final String QUERY_SELECT_ENDPOINT = "/marmotta/sparql/select";
+    public static final String QUERY_UPDATE_ENDPOINT = "/marmotta/sparql/update";
      
     public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException;
     public List<LinkedEntity> getLinkedEntities(String contentItemUri, String... criterias) throws MicoClientException;

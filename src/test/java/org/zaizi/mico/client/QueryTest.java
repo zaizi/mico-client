@@ -22,6 +22,7 @@ public class QueryTest
 {
 
     private static final String MICO_HOST = "demo4.mico-project.eu:8080";
+
     private static final String MICO_USER = "djayakody";
     private static final String MICO_PASSWORD = "7onjhMcFG1kf";
 
@@ -43,7 +44,8 @@ public class QueryTest
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/0c47da8a-50ba-498a-959d-e338f4653aad";
+        //String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
         {
@@ -52,7 +54,7 @@ public class QueryTest
             {
                 StatusResponse statusResponse = statusResponses.get(0);
                 if (statusResponse.isFinished())
-                { 
+               { 
                     List<LinkedEntity> linkedEntities = queryClient.getLinkedEntities(contentItemUri);
                     logger.info("Number of linked entities retrieved: " + linkedEntities.size());
                     for (LinkedEntity linkedEntity : linkedEntities)
@@ -74,12 +76,13 @@ public class QueryTest
     }
 
 
-    
+    //@Test
     public void testFilteredEntityQuery() throws MicoClientException
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = " http://demo4.mico-project.eu:8080/marmotta/a9a84467-730e-4b43-b097-344356a637ed";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/0c47da8a-50ba-498a-959d-e338f4653aad";
+        //String contentItemUri= "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
         {
@@ -91,8 +94,7 @@ public class QueryTest
                 {
                     Map<String,String> pathValues = new HashMap<String,String>();
                     pathValues.put("fam:entity-type", "skos:Concept");
-                    
-                    
+                                   
                     List<LinkedEntity> linkedEntities = queryClient.getLinkedEntities(contentItemUri,
                             LDPathUtil.getResourcePathValueTests("oa:hasBody", pathValues, true, false, false));
                     logger.info("Number of linked entities with skos:Concept type retrieved: " + linkedEntities.size());
@@ -114,7 +116,7 @@ public class QueryTest
         assertFalse(entities.isEmpty());
     }
     
-	
+	//@Test
 	public void testFaceDetectionQuery() throws MicoClientException
 	{
 	    QueryClient queryClient = micoClientfactory.createQueryServiceClient();
