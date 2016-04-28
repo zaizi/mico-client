@@ -15,6 +15,8 @@ public interface QueryClient {
     public static final String QUERY_UPDATE_ENDPOINT = "/marmotta/sparql/update";
      
     public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException;
+    public List<LinkedEntity> getLinkedEntities(String contentItemUri, Map<String,String> namespaces, String... criterias) throws MicoClientException;
+    
     public List<LinkedEntity> getLinkedEntities(String contentItemUri, String... criterias) throws MicoClientException;
     
     public List<FaceFragment> getFaceFragments(String contentItemUri) throws MicoClientException;

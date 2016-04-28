@@ -116,6 +116,44 @@ public class Anno4jQueryClientImpl implements QueryClient
 
         return linkedEntities;
     }
+    
+    @Override
+    public List<LinkedEntity> getLinkedEntities(String contentItemUri, Map<String, String> namespaces,
+            String... criterias) throws MicoClientException
+    {
+        List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
+        try
+        {
+            QueryService queryService = anno4j.createQueryService();
+            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
+            //adding new namespaces
+            for(String prefix : namespaces.keySet())
+            {
+                queryService.addPrefix(prefix, namespaces.get(prefix));
+            }
+            
+            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
+            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "fam:LinkedEntity", null));
+            for (String criteria : criterias)
+            {
+                queryService.addCriteria(criteria);
+            }
+            
+            List<Annotation> linkedEntityAnnotations = queryService.execute();
+            for (Annotation annotation : linkedEntityAnnotations)
+            {
+                linkedEntities.add(getLinkedEntityFromAnnotation(annotation));
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
+                    ex);
+        }
+
+        return linkedEntities;
+    }
 
     @Override
     public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException
@@ -146,7 +184,7 @@ public class Anno4jQueryClientImpl implements QueryClient
         }
         return faceFragments;
     }
-
+    
     private LinkedEntity getLinkedEntityFromAnnotation(Annotation annotation)
     {
         LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
