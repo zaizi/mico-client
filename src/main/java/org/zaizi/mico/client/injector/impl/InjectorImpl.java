@@ -28,7 +28,11 @@ import org.zaizi.mico.client.model.ContentPart;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
+/**
+ * Implementation  class for Injector
+ * @author Chalitha Perera
+ *
+ */
 public class InjectorImpl implements Injector{
 	
 	private URIBuilder uriBuilder;

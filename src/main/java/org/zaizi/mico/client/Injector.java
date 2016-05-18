@@ -6,7 +6,11 @@ import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.ContentItem;
 import org.zaizi.mico.client.model.ContentPart;
 
-
+/**
+ * Interface for creating and injecting content items for mico platform
+ * @author Chalitha Perera
+ *
+ */
 public interface Injector {
 	public static final String INJECT_CREATE_PATH = "/broker/inject/create";
 	public static final String INJECT_ADD_PATH = "/broker/inject/add";
@@ -22,7 +26,7 @@ public interface Injector {
 	
 
 	/**
-	 * 
+	 * Create a content part for a content item
 	 * @param contentItem
 	 * @param mimeType
 	 * @param name
@@ -33,7 +37,7 @@ public interface Injector {
 	
 	
 	/**
-	 * 
+	 * submit content item to mico platform
 	 * @param contentItem
 	 * @throws MicoClientException 
 	 */

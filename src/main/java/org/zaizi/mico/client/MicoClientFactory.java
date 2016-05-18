@@ -11,7 +11,7 @@ import org.zaizi.mico.client.status.impl.StatusCheckerImpl;
 import com.github.anno4j.Anno4j;
 
 /**
- * 
+ * Provide factory to create mico clients
  * @author Chalitha Perera
  *
  */
@@ -21,6 +21,12 @@ public class MicoClientFactory {
 	private String username;
 	String password;
 
+	/**
+	 * 
+	 * @param host
+	 * @param username
+	 * @param password
+	 */
 	public MicoClientFactory(String host, String username, String password) {
 		uriBuilder = new URIBuilder();
 		uriBuilder.setScheme("http").setHost(host).setUserInfo(username, password);
@@ -28,10 +34,19 @@ public class MicoClientFactory {
 		this.password = password;
 	}
 
+	/**
+	 * 
+	 * @return Injector
+	 */
 	public final Injector createInjectorClient() {
 		return new InjectorImpl(uriBuilder);
 	}
 
+	/**
+	 * 
+	 * @return QueryClient
+	 * @throws MicoClientException
+	 */
 	public final QueryClient createQueryServiceClient() throws MicoClientException {
 		QueryClient queryClient = null;
 		try {
@@ -47,6 +62,10 @@ public class MicoClientFactory {
 		return queryClient;
 	}
 
+	/**
+	 * 
+	 * @return StatusChecker
+	 */
 	public final StatusChecker createStatusChecker() {
 		return new StatusCheckerImpl(uriBuilder);
 	}

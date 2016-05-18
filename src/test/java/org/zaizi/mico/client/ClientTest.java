@@ -30,9 +30,10 @@ public class ClientTest {
 
     @Test
 	public void testInject() throws MicoClientException, FileNotFoundException {
-	    String testResource = "text1.txt";
+    	String testResource = "text1.txt";
         InputStream is = getClass().getResourceAsStream("/"+testResource);
 
+    	
         Injector injector = micoClientfactory.createInjectorClient();
         ContentItem ci = injector.createContentItem();
         ContentPart cp = injector.addContentPart(ci, "text/plain", testResource,
