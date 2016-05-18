@@ -39,12 +39,12 @@ public class QueryTest
     }
 
  
-    @Test
+    //@Test
     public void testEntityQuery() throws MicoClientException
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/981df92e-3caf-4e76-8e52-97f6b1999655";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/e83c0350-5a23-4d3e-a00b-98098bfd36cf";
         //String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
@@ -81,8 +81,8 @@ public class QueryTest
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/981df92e-3caf-4e76-8e52-97f6b1999655";
-        //String contentItemUri= "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
+        //String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/981df92e-3caf-4e76-8e52-97f6b1999655";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/5d0a3f29-02ee-4389-9e0b-b33720a7a09b";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
         {
@@ -93,16 +93,14 @@ public class QueryTest
                 if (statusResponse.isFinished())
                 {
                     Map<String,String> namespaces = new HashMap<String,String>();
-                    namespaces.put("dbo", "http://dbpedia.org/ontology#");
+                    namespaces.put("dbo", "http://dbpedia.org/ontology/");
 
                     Map<String,String> pathValues = new HashMap<String,String>();
                     pathValues.put("fam:entity-type", "dbo:TopicalConcept");
-                    //pathValues.put("fam:entity-type", "skos:Concept");
-                    
-                                   
+                                
                     List<LinkedEntity> linkedEntities = queryClient.getLinkedEntities(contentItemUri, namespaces,
                             LDPathUtil.getResourcePathValueTests("oa:hasBody", pathValues, true, false, true));
-                    logger.info("Number of linked entities with skos:Concept type retrieved: " + linkedEntities.size());
+                    logger.info("Number of linked entities with dbo:TopicalConcept type retrieved: " + linkedEntities.size());
                     for (LinkedEntity linkedEntity : linkedEntities)
                     {
                         logger.info("Entity Label: " + linkedEntity.getEntityLabel());
