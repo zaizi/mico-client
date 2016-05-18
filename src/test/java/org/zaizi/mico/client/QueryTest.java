@@ -44,7 +44,7 @@ public class QueryTest
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/981df92e-3caf-4e76-8e52-97f6b1999655";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/e83c0350-5a23-4d3e-a00b-98098bfd36cf";
         //String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
@@ -76,12 +76,12 @@ public class QueryTest
     }
 
 
-    @Test
+//    @Test
     public void testFilteredEntityQuery() throws MicoClientException
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/981df92e-3caf-4e76-8e52-97f6b1999655";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/e83c0350-5a23-4d3e-a00b-98098bfd36cf";
         //String contentItemUri= "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
