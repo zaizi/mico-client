@@ -28,7 +28,7 @@ public interface QueryClient {
     /**
      * get linked entities for a given content item (content item is identified from the uri)
      * @param contentItemUri
-     * @param namespaces add addtional namespaces (E.g. "dbo", "http://dbpedia.org/ontology#")
+     * @param namespaces add addtional namespaces (E.g. "dbo", "http://dbpedia.org/ontology/")
      * @param criterias addtional criterias for filtering query (Can use LDPathUtil to create such filters)
      * @return
      * @throws MicoClientException
