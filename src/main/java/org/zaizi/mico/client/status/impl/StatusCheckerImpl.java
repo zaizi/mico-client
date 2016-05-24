@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zaizi.mico.client.StatusChecker;
 import org.zaizi.mico.client.exception.MicoClientException;
-import org.zaizi.mico.client.model.ContentItem;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

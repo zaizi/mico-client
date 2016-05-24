@@ -29,103 +29,113 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Implementation  class for Injector
+ * Implementation class for Injector
+ * 
  * @author Chalitha Perera
  *
  */
-public class InjectorImpl implements Injector{
-	
+public class InjectorImpl implements Injector {
+
 	private URIBuilder uriBuilder;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(InjectorImpl.class);
-	
-	public InjectorImpl(URIBuilder uriBuilder){
+
+	private static final String MICO_URI = "itemUri";
+	private static final String PART_URI = "partURI";
+
+	public InjectorImpl(URIBuilder uriBuilder) {
 		this.uriBuilder = uriBuilder;
 	}
 
 	@Override
-	public ContentItem createContentItem() throws MicoClientException {
+	public ContentItem createContentItem(String type, String name, InputStream inputStream) throws MicoClientException {
 		try {
 			URIBuilder builderCopy = new URIBuilder(uriBuilder.build().toString());
-			URI createUri = builderCopy.setPath(INJECT_CREATE_PATH).build();
-			
-			final HttpPost post = new HttpPost(createUri);
-			final CloseableHttpResponse response = this.sendRequest(post);
-			
-			if(response.getStatusLine().getStatusCode() != Response.Status.OK.getStatusCode()){
-				throw new MicoClientException("Could not create content item....");
-			}
-			
-			final String responseBody = EntityUtils.toString(response.getEntity());
-            HttpClientUtils.closeQuietly(response);
+			URI createUri = builderCopy.setPath(INJECT_CREATE_PATH).setParameter("type", type)
+					.setParameter("name", name).build();
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            final JsonNode node = objectMapper.readTree(responseBody);
-            
-            if(!node.has("uri")){
-            	throw new MicoClientException("Could not find URI of the contentItem....");
-            }
-            
-            final String contentItemUri = node.get("uri").asText();
-            String[] parts = contentItemUri.split("/");
-            ContentItem contentItem = new ContentItem(contentItemUri, parts[parts.length-1]);
-			
-            return contentItem;
-			
-		} catch (URISyntaxException e) {
-			logger.error("Invalide URL", e);
-			throw new MicoClientException(e.getMessage());
-		} catch (ClientProtocolException e) {
-			logger.error("Error in sending create request to mico", e);
-			throw new MicoClientException(e.getMessage());
-		} catch (IOException e) {
-			logger.error("Error in sending create request to mico", e);
-			throw new MicoClientException(e.getMessage());
-		}
-	}
-	
-	@Override
-	public ContentPart addContentPart(ContentItem contentItem, String mimeType, String name, InputStream inputStream) throws MicoClientException {
-		try {
-			URIBuilder builderCopy = new URIBuilder(uriBuilder.build().toString());
-			URI addUri = builderCopy.setPath(INJECT_ADD_PATH).setParameter("ci", contentItem.getUri())
-					.setParameter("type", mimeType)
-					.setParameter("name", name)
-					.build();
-			
-			final HttpPost post = new HttpPost(addUri);
-			File tempFile = File.createTempFile("mico-"+contentItem.getID(), "tmp");
+			final HttpPost post = new HttpPost(createUri);
+			File tempFile = File.createTempFile("mico-" + name, "tmp");
 			FileUtils.copyInputStreamToFile(inputStream, tempFile);
-			
+
 			FileEntity entity = new FileEntity(tempFile);
 			post.setEntity(entity);
 			
 			final CloseableHttpResponse response = this.sendRequest(post);
-			
-			if(response.getStatusLine().getStatusCode() != Response.Status.OK.getStatusCode()){
+
+			if (response.getStatusLine().getStatusCode() != Response.Status.OK.getStatusCode()) {
+				throw new MicoClientException("Could not create content item....");
+			}
+
+			final String responseBody = EntityUtils.toString(response.getEntity());
+			HttpClientUtils.closeQuietly(response);
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			final JsonNode node = objectMapper.readTree(responseBody);
+
+			if (!node.has(MICO_URI)) {
+				throw new MicoClientException("Could not find URI of the contentItem....");
+			}
+
+			final String contentItemUri = node.get(MICO_URI).asText();
+			String[] parts = contentItemUri.split("/");
+			ContentItem contentItem = new ContentItem(contentItemUri, parts[parts.length - 1]);
+
+			return contentItem;
+
+		} catch (URISyntaxException e) {
+			logger.error("Invalide URL", e);
+			throw new MicoClientException(e.getMessage());
+		} catch (ClientProtocolException e) {
+			logger.error("Error in sending create request to mico", e);
+			throw new MicoClientException(e.getMessage());
+		} catch (IOException e) {
+			logger.error("Error in sending create request to mico", e);
+			throw new MicoClientException(e.getMessage());
+		}
+	}
+
+	@Override
+	public ContentPart addContentPart(ContentItem contentItem, String mimeType, String name, InputStream inputStream)
+			throws MicoClientException {
+		try {
+			URIBuilder builderCopy = new URIBuilder(uriBuilder.build().toString());
+			URI addUri = builderCopy.setPath(INJECT_ADD_PATH).setParameter(MICO_URI, contentItem.getUri())
+					.setParameter("type", mimeType).setParameter("name", name).build();
+
+			final HttpPost post = new HttpPost(addUri);
+			File tempFile = File.createTempFile("mico-" + contentItem.getID(), "tmp");
+			FileUtils.copyInputStreamToFile(inputStream, tempFile);
+
+			FileEntity entity = new FileEntity(tempFile);
+			post.setEntity(entity);
+
+			final CloseableHttpResponse response = this.sendRequest(post);
+
+			if (response.getStatusLine().getStatusCode() != Response.Status.OK.getStatusCode()) {
 				throw new MicoClientException("Could not create content part....");
 			}
-			
-			final String responseBody = EntityUtils.toString(response.getEntity());
-            HttpClientUtils.closeQuietly(response);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            final JsonNode node = objectMapper.readTree(responseBody);
-            
-            if(!node.has("uri")){
-            	throw new MicoClientException("Could not find URI of the contentPart....");
-            }
-            
-            final String contentPartUri = node.get("uri").asText();
-            
-            ContentPart contentPart = new ContentPart(contentPartUri);
-            contentPart.setMimeType(mimeType);
-            contentPart.setName(name);
-            
-            tempFile.delete();
-            
-            return contentPart;
-            
+			final String responseBody = EntityUtils.toString(response.getEntity());
+			HttpClientUtils.closeQuietly(response);
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			final JsonNode node = objectMapper.readTree(responseBody);
+
+			if (!node.has(PART_URI)) {
+				throw new MicoClientException("Could not find URI of the contentPart....");
+			}
+
+			final String contentPartUri = node.get(PART_URI).asText();
+
+			ContentPart contentPart = new ContentPart(contentPartUri);
+			contentPart.setMimeType(mimeType);
+			contentPart.setName(name);
+
+			tempFile.delete();
+
+			return contentPart;
+
 		} catch (URISyntaxException e) {
 			logger.error("Invalide URL", e);
 			throw new MicoClientException(e.getMessage());
@@ -136,25 +146,24 @@ public class InjectorImpl implements Injector{
 			logger.error("Error in sending add request to mico", e);
 			throw new MicoClientException(e.getMessage());
 		}
-		
-	}
 
+	}
 
 	@Override
 	public void submitContentItem(ContentItem contentItem) throws MicoClientException {
 		try {
 			URIBuilder builderCopy = new URIBuilder(uriBuilder.build().toString());
-			URI submitUri = builderCopy.setPath(INJECT_SUBMIT_PATH).setParameter("ci", contentItem.getUri()).build();
+			URI submitUri = builderCopy.setPath(INJECT_SUBMIT_PATH).setParameter("item", contentItem.getUri()).build();
 			final HttpPost post = new HttpPost(submitUri);
-			
+
 			final CloseableHttpResponse response = this.sendRequest(post);
-			
-			if(response.getStatusLine().getStatusCode() != Response.Status.OK.getStatusCode()){
+
+			if (response.getStatusLine().getStatusCode() != Response.Status.OK.getStatusCode()) {
 				throw new MicoClientException("Could not submit content item....");
 			}
-			
+
 			logger.info("Successfully Submitted ContentItem...");
-			
+
 		} catch (URISyntaxException e) {
 			logger.error("Invalide URL", e);
 			throw new MicoClientException(e.getMessage());
@@ -165,11 +174,10 @@ public class InjectorImpl implements Injector{
 			logger.error("Error in sending submit request to mico", e);
 			throw new MicoClientException(e.getMessage());
 		}
-		
+
 	}
-	
-	
-	private CloseableHttpResponse sendRequest(HttpPost post) throws ClientProtocolException, IOException{
+
+	private CloseableHttpResponse sendRequest(HttpPost post) throws ClientProtocolException, IOException {
 		final CloseableHttpClient client = HttpClients.createDefault();
 		final CloseableHttpResponse response = client.execute(post);
 		return response;

@@ -12,6 +12,9 @@ public class ContentPartResponse {
     private String type;
     private String uri;
     private String creator;
+    private boolean hasAsset;
+    private AssetLocation assetLocation;
+    private String assetFormat;
 
     public String getTitle() {
         return title;
@@ -76,5 +79,29 @@ public class ContentPartResponse {
     public void setCreator(String creator) {
         this.creator = creator;
     }
+
+	public boolean isHasAsset() {
+		return hasAsset;
+	}
+
+	public void setHasAsset(boolean hasAsset) {
+		this.hasAsset = hasAsset;
+	}
+
+	public AssetLocation getAssetLocation() {
+		return assetLocation;
+	}
+
+	public void setAssetLocation(AssetLocation assetLocation) {
+		this.assetLocation = assetLocation;
+	}
+
+	public String getAssetFormat() {
+		return assetFormat;
+	}
+
+	public void setAssetFormat(String assetFormat) {
+		this.assetFormat = assetFormat;
+	}
 
 }

@@ -8,6 +8,7 @@ This provides methods to inject content to platform and a query client for query
 ```
 git clone https://github.com/zaizi/mico-client.git
 cd mico-client
+git checkout develop
 mvn clean install -DskipTests
 ```
 
@@ -16,7 +17,7 @@ mvn clean install -DskipTests
 <dependency>
     <groupId>org.zaizi</groupId>
     <artifactId>mico.client</artifactId>
-    <version>1.0</version>
+    <version>2.0-SNAPSHOT</version>
 </dependency>
 ```
 

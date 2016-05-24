@@ -22,7 +22,7 @@ public interface Injector {
 	 * @return ContentItem
 	 * @throws MicoClientException 
 	 */
-	public ContentItem createContentItem() throws MicoClientException;
+	public ContentItem createContentItem(String type, String name, InputStream inputStream) throws MicoClientException;
 	
 
 	/**

@@ -7,7 +7,15 @@ public class StatusResponse {
 	private boolean finished;
     private String uri;
     private String time;
+    private String syntacticalType;
+    private boolean hasError;
+    private String error;
     private List<ContentPartResponse> parts;
+    private AssetLocation assetLocation;
+    private String serializedAt;
+    private String assetFormat;
+    private String semanticType;
+    private boolean hasAsset;
 
     public boolean isFinished() {
         return finished;
@@ -40,5 +48,69 @@ public class StatusResponse {
     public void setParts(List<ContentPartResponse> parts) {
         this.parts = parts;
     }
+
+	public String getSyntacticalType() {
+		return syntacticalType;
+	}
+
+	public void setSyntacticalType(String syntacticalType) {
+		this.syntacticalType = syntacticalType;
+	}
+
+	public boolean isHasError() {
+		return hasError;
+	}
+
+	public void setHasError(boolean hasError) {
+		this.hasError = hasError;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public AssetLocation getAssetLocation() {
+		return assetLocation;
+	}
+
+	public void setAssetLocation(AssetLocation assetLocation) {
+		this.assetLocation = assetLocation;
+	}
+
+	public String getSerializedAt() {
+		return serializedAt;
+	}
+
+	public void setSerializedAt(String serializedAt) {
+		this.serializedAt = serializedAt;
+	}
+
+	public String getAssetFormat() {
+		return assetFormat;
+	}
+
+	public void setAssetFormat(String assetFormat) {
+		this.assetFormat = assetFormat;
+	}
+
+	public String getSemanticType() {
+		return semanticType;
+	}
+
+	public void setSemanticType(String semanticType) {
+		this.semanticType = semanticType;
+	}
+
+	public boolean isHasAsset() {
+		return hasAsset;
+	}
+
+	public void setHasAsset(boolean hasAsset) {
+		this.hasAsset = hasAsset;
+	}
 
 }
