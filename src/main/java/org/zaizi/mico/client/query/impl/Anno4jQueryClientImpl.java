@@ -8,9 +8,7 @@ import java.util.Set;
 import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.face.FaceFragment;
-import org.zaizi.mico.client.model.namespace.FAM;
 import org.zaizi.mico.client.model.text.LinkedEntity;
-import org.zaizi.mico.client.model.text.LinkedEntityBody;
 import org.zaizi.mico.client.query.util.LDPathUtil;
 
 import com.github.anno4j.Anno4j;
@@ -21,208 +19,181 @@ import com.github.anno4j.model.impl.selector.FragmentSelector;
 import com.github.anno4j.model.impl.targets.SpecificResource;
 import com.github.anno4j.querying.QueryService;
 
-import eu.mico.platform.anno4j.model.namespaces.MICO;
+import eu.mico.platform.anno4j.model.PartMMM;
+import eu.mico.platform.anno4j.model.fam.LinkedEntityBody;
+import eu.mico.platform.anno4j.model.namespaces.FAM;
+import eu.mico.platform.anno4j.model.namespaces.MMM;
+import eu.mico.platform.anno4j.model.namespaces.MMMTERMS;
 
-public class Anno4jQueryClientImpl implements QueryClient
-{
+public class Anno4jQueryClientImpl implements QueryClient {
 
-    private Anno4j anno4j;
+	private Anno4j anno4j;
 
-    public Anno4jQueryClientImpl(Anno4j anno4j)
-    {
-        this.anno4j = anno4j;
-    }
+	public Anno4jQueryClientImpl(Anno4j anno4j) {
+		this.anno4j = anno4j;
+	}
 
-    @Override
-    public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException
-    {
-        List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
-        try
-        {
-            QueryService queryService = anno4j.createQueryService();
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
-            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
-            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "fam:LinkedEntity", null));
-            List<Annotation> linkedEntityAnnotations = queryService.execute();
-            for (Annotation annotation : linkedEntityAnnotations)
-            {
-                linkedEntities.add(getLinkedEntityFromAnnotation(annotation));
-            }
+	@Override
+	public List<LinkedEntity> getLinkedEntities(String contentItemUri) throws MicoClientException {
 
-        }
-        catch (Exception ex)
-        {
-            throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
-                    ex);
-        }
+		List<LinkedEntity> linkedEntities;
+		try {
+			QueryService queryService = anno4j.createQueryService();
+			queryService.addPrefix(MMM.PREFIX, MMM.NS).addPrefix(FAM.PREFIX, FAM.NS);
+			queryService.addCriteria("^mmm:hasPart", contentItemUri);
+			queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, FAM.LINKED_ENTITY_ANNOTATION, null));
+			List<PartMMM> linkedEntityAnnotations = queryService.execute(PartMMM.class);
+			linkedEntities = this.addToLinkedEntities(linkedEntityAnnotations);
 
-        return linkedEntities;
-    }
+		} catch (Exception ex) {
+			throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
+					ex);
+		}
 
-    @Override
-    public List<FaceFragment> getFaceFragments(String contentItemUri) throws MicoClientException
-    {
-        List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
-        try
-        {
-            QueryService queryService = anno4j.createQueryService();
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
-                    contentItemUri);
-            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "mico:FaceDetectionBody", null));
-            List<Annotation> faceDetectAnnotations = queryService.execute();
-            for (Annotation annotation : faceDetectAnnotations)
-            {
-                List<FaceFragment> fragments = getFaceFragmentsFromAnnotation(annotation);
-                faceFragments.addAll(fragments);
-            }
+		return linkedEntities;
+	}
 
-        }
-        catch (Exception ex)
-        {
-            throw new MicoClientException("Exception occurred while retrieving face fragments from the content item",
-                    ex);
-        }
-        return faceFragments;
-    }
+	@Override
+	public List<FaceFragment> getFaceFragments(String contentItemUri) throws MicoClientException {
+		List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
+		try {
+			QueryService queryService = anno4j.createQueryService();
+			queryService.addPrefix(MMM.PREFIX, MMM.NS).addCriteria("^mmm:hasPart", contentItemUri);
+			queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, MMMTERMS.FACE_DETECTION_BODY, null));
+			List<Annotation> faceDetectAnnotations = queryService.execute();
+			for (Annotation annotation : faceDetectAnnotations) {
+				List<FaceFragment> fragments = getFaceFragmentsFromAnnotation(annotation);
+				faceFragments.addAll(fragments);
+			}
 
-    @Override
-    public List<LinkedEntity> getLinkedEntities(String contentItemUri, String... criterias) throws MicoClientException
-    {
-        List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
-        try
-        {
-            QueryService queryService = anno4j.createQueryService();
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
-            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
-            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "fam:LinkedEntity", null));
-            for (String criteria : criterias)
-            {
-                queryService.addCriteria(criteria);
-            }
-            // processBodyResourcePathValue(queryService, "fam:entity-type", "skos:Concept");
+		} catch (Exception ex) {
+			throw new MicoClientException("Exception occurred while retrieving face fragments from the content item",
+					ex);
+		}
+		return faceFragments;
+	}
 
-            List<Annotation> linkedEntityAnnotations = queryService.execute();
-            for (Annotation annotation : linkedEntityAnnotations)
-            {
-                linkedEntities.add(getLinkedEntityFromAnnotation(annotation));
-            }
+	@Override
+	public List<LinkedEntity> getLinkedEntities(String contentItemUri, String... criterias) throws MicoClientException {
+		List<LinkedEntity> linkedEntities;
+		try {
+			QueryService queryService = anno4j.createQueryService();
+			queryService.addPrefix(MMM.PREFIX, MMM.NS).addPrefix(FAM.PREFIX, FAM.NS);
+			queryService.addCriteria("^mmm:hasPart", contentItemUri);
+			queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, FAM.LINKED_ENTITY_ANNOTATION, null));
+			for (String criteria : criterias) {
+				queryService.addCriteria(criteria);
+			}
 
-        }
-        catch (Exception ex)
-        {
-            throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
-                    ex);
-        }
+			List<PartMMM> linkedEntityAnnotations = queryService.execute(PartMMM.class);
+			linkedEntities = this.addToLinkedEntities(linkedEntityAnnotations);
 
-        return linkedEntities;
-    }
-    
-    @Override
-    public List<LinkedEntity> getLinkedEntities(String contentItemUri, Map<String, String> namespaces,
-            String... criterias) throws MicoClientException
-    {
-        List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
-        try
-        {
-            QueryService queryService = anno4j.createQueryService();
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addPrefix(FAM.PREFIX, FAM.NS);
-            //adding new namespaces
-            for(String prefix : namespaces.keySet())
-            {
-                queryService.addPrefix(prefix, namespaces.get(prefix));
-            }
-            
-            queryService.addCriteria("^mico:hasContent/^mico:hasContentPart", contentItemUri);
-            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "fam:LinkedEntity", null));
-            for (String criteria : criterias)
-            {
-                queryService.addCriteria(criteria);
-            }
-            
-            List<Annotation> linkedEntityAnnotations = queryService.execute();
-            for (Annotation annotation : linkedEntityAnnotations)
-            {
-                linkedEntities.add(getLinkedEntityFromAnnotation(annotation));
-            }
+		} catch (Exception ex) {
+			throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
+					ex);
+		}
 
-        }
-        catch (Exception ex)
-        {
-            throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
-                    ex);
-        }
+		return linkedEntities;
+	}
 
-        return linkedEntities;
-    }
+	@Override
+	public List<LinkedEntity> getLinkedEntities(String contentItemUri, Map<String, String> namespaces,
+			String... criterias) throws MicoClientException {
+		List<LinkedEntity> linkedEntities;
+		try {
+			QueryService queryService = anno4j.createQueryService();
+			queryService.addPrefix(MMM.PREFIX, MMM.NS).addPrefix(FAM.PREFIX, FAM.NS);
+			// adding new namespaces
+			for (String prefix : namespaces.keySet()) {
+				queryService.addPrefix(prefix, namespaces.get(prefix));
+			}
 
-    @Override
-    public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException
-    {
-        List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
-        try
-        {
-            QueryService queryService = anno4j.createQueryService();
-            queryService.addPrefix(MICO.PREFIX, MICO.NS).addCriteria("^mico:hasContent/^mico:hasContentPart",
-                    contentItemUri);
-            queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, "mico:FaceDetectionBody", null));
-            for (String criteria : criterias)
-            {
-                queryService.addCriteria(criteria);
-            }
-            List<Annotation> faceDetectAnnotations = queryService.execute();
-            for (Annotation annotation : faceDetectAnnotations)
-            {
-                List<FaceFragment> fragments = getFaceFragmentsFromAnnotation(annotation);
-                faceFragments.addAll(fragments);
-            }
+			queryService.addCriteria("^mmm:hasPart", contentItemUri);
+			queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, FAM.LINKED_ENTITY_ANNOTATION, null));
+			for (String criteria : criterias) {
+				queryService.addCriteria(criteria);
+			}
 
-        }
-        catch (Exception ex)
-        {
-            throw new MicoClientException("Exception occurred while retrieving face fragments from the content item",
-                    ex);
-        }
-        return faceFragments;
-    }
-    
-    private LinkedEntity getLinkedEntityFromAnnotation(Annotation annotation)
-    {
-        LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
-        LinkedEntity entity = new LinkedEntity();
-        entity.setConfidence(body.getConfidence());
-        entity.setEntityLabel(body.getEntityLabel());
-        entity.setEntityMention(body.getEntityMention());
+			List<PartMMM> linkedEntityAnnotations = queryService.execute(PartMMM.class);
+			linkedEntities = this.addToLinkedEntities(linkedEntityAnnotations);
 
-        String entityReference = body.getEntityReference();
-        entity.setEntityReference(entityReference);
-        String entityType = body.getEntityType();
-        entity.setEntityType(entityType);
-        return entity;
-    }
+		} catch (Exception ex) {
+			throw new MicoClientException("Exception occurred while retrieving linked entities from the content item",
+					ex);
+		}
 
-    private List<FaceFragment> getFaceFragmentsFromAnnotation(Annotation annotation)
-    {
+		return linkedEntities;
+	}
 
-        List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
-        Set<Target> targets = annotation.getTarget();
-        for (Target target : targets)
-        {
-            if (target instanceof SpecificResource)
-            {
-                Selector selector = ((SpecificResource) target).getSelector();
-                if (selector instanceof FragmentSelector)
-                {
-                    int x = ((FragmentSelector) selector).getX();
-                    int y = ((FragmentSelector) selector).getY();
-                    int w = ((FragmentSelector) selector).getWidth();
-                    int h = ((FragmentSelector) selector).getHeight();
-                    FaceFragment faceFragment = new FaceFragment(x, y, w, h);
-                    faceFragments.add(faceFragment);
-                }
+	@Override
+	public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException {
+		List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
+		try {
+			QueryService queryService = anno4j.createQueryService();
+			queryService.addPrefix(MMM.PREFIX, MMM.NS).addCriteria("^mmm:hasPart", contentItemUri);
+			queryService.addCriteria(LDPathUtil.getAnnotationTypeRestriction(null, MMMTERMS.FACE_DETECTION_BODY, null));
+			for (String criteria : criterias) {
+				queryService.addCriteria(criteria);
+			}
+			List<Annotation> faceDetectAnnotations = queryService.execute();
+			for (Annotation annotation : faceDetectAnnotations) {
+				List<FaceFragment> fragments = getFaceFragmentsFromAnnotation(annotation);
+				faceFragments.addAll(fragments);
+			}
 
-            }
-        }
-        return faceFragments;
-    }
+		} catch (Exception ex) {
+			throw new MicoClientException("Exception occurred while retrieving face fragments from the content item",
+					ex);
+		}
+		return faceFragments;
+	}
+
+	private LinkedEntity getLinkedEntityFromAnnotation(PartMMM annotation) {
+		LinkedEntity entity = new LinkedEntity();
+
+		if (annotation.getBody() instanceof LinkedEntityBody) {
+			LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
+			entity.setConfidence(body.getConfidence());
+			// body.getMention();
+			entity.setEntityLabel(body.getLabel().toString());
+			;
+			entity.setEntityReference(body.getEntity().getResource().toString());
+		}
+
+		return entity;
+	}
+
+	private List<LinkedEntity> addToLinkedEntities(List<PartMMM> linkedEntityAnnotations) {
+
+		List<LinkedEntity> linkedEntities = new ArrayList<LinkedEntity>();
+		for (PartMMM partMMM : linkedEntityAnnotations) {
+			LinkedEntity entity = getLinkedEntityFromAnnotation(partMMM);
+			if(entity != null){
+				linkedEntities.add(entity);
+			}
+		}
+		return linkedEntities;
+	}
+
+	private List<FaceFragment> getFaceFragmentsFromAnnotation(Annotation annotation) {
+
+		List<FaceFragment> faceFragments = new ArrayList<FaceFragment>();
+		Set<Target> targets = annotation.getTarget();
+		for (Target target : targets) {
+			if (target instanceof SpecificResource) {
+				Selector selector = ((SpecificResource) target).getSelector();
+				if (selector instanceof FragmentSelector) {
+					int x = ((FragmentSelector) selector).getX();
+					int y = ((FragmentSelector) selector).getY();
+					int w = ((FragmentSelector) selector).getWidth();
+					int h = ((FragmentSelector) selector).getHeight();
+					FaceFragment faceFragment = new FaceFragment(x, y, w, h);
+					faceFragments.add(faceFragment);
+				}
+
+			}
+		}
+		return faceFragments;
+	}
 
 }
