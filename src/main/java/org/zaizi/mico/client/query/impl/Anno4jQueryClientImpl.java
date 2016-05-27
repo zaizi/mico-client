@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openrdf.repository.object.RDFObject;
 import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.face.FaceFragment;
@@ -154,9 +155,13 @@ public class Anno4jQueryClientImpl implements QueryClient {
 		if (annotation.getBody() instanceof LinkedEntityBody) {
 			LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
 			entity.setConfidence(body.getConfidence());
-			// body.getMention();
+			Set<RDFObject> typeSet = body.getTypes();
+			if(typeSet != null){
+				List<RDFObject> typesList = new ArrayList<>(body.getTypes());
+				entity.setEntityType(typesList.get(0).toString());
+			}
+
 			entity.setEntityLabel(body.getLabel().toString());
-			;
 			entity.setEntityReference(body.getEntity().getResource().toString());
 		}
 
