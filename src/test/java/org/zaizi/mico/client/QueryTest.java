@@ -44,7 +44,7 @@ public class QueryTest
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/b7ea7424-9177-4591-8bb1-ebceffd12a8b";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/5b1a7410-ad2d-4f4c-bdae-1516dedadf2a";
         //String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)

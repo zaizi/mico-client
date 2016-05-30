@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openrdf.repository.object.RDFObject;
 import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.face.FaceFragment;
+import org.zaizi.mico.client.model.namespace.FAM;
 import org.zaizi.mico.client.model.text.LinkedEntity;
+import org.zaizi.mico.client.model.text.LinkedEntityBody;
 import org.zaizi.mico.client.query.util.LDPathUtil;
 
 import com.github.anno4j.Anno4j;
@@ -21,8 +22,6 @@ import com.github.anno4j.model.impl.targets.SpecificResource;
 import com.github.anno4j.querying.QueryService;
 
 import eu.mico.platform.anno4j.model.PartMMM;
-import eu.mico.platform.anno4j.model.fam.LinkedEntityBody;
-import eu.mico.platform.anno4j.model.namespaces.FAM;
 import eu.mico.platform.anno4j.model.namespaces.MMM;
 import eu.mico.platform.anno4j.model.namespaces.MMMTERMS;
 
@@ -155,14 +154,13 @@ public class Anno4jQueryClientImpl implements QueryClient {
 		if (annotation.getBody() instanceof LinkedEntityBody) {
 			LinkedEntityBody body = (LinkedEntityBody) annotation.getBody();
 			entity.setConfidence(body.getConfidence());
-			Set<RDFObject> typeSet = body.getTypes();
-			if(typeSet != null){
-				List<RDFObject> typesList = new ArrayList<>(body.getTypes());
-				entity.setEntityType(typesList.get(0).toString());
-			}
+			entity.setEntityLabel(body.getEntityLabel());
+	        entity.setEntityMention(body.getEntityMention());
 
-			entity.setEntityLabel(body.getLabel().toString());
-			entity.setEntityReference(body.getEntity().getResource().toString());
+	        String entityReference = body.getEntityReference();
+	        entity.setEntityReference(entityReference);
+	        String entityType = body.getEntityType();
+	        entity.setEntityType(entityType);
 		}
 
 		return entity;
