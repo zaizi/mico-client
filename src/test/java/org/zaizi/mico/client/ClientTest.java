@@ -30,7 +30,7 @@ public class ClientTest {
 		micoClientfactory = new MicoClientFactory(MICO_HOST, MICO_USER, MICO_PASSWORD);
 	}
 
-//    @Test
+    @Test
 	public void testInject() throws MicoClientException, IOException {
     	String testResource = "text1.txt";
         InputStream is = getClass().getResourceAsStream("/"+testResource);
@@ -38,9 +38,6 @@ public class ClientTest {
     	
         Injector injector = micoClientfactory.createInjectorClient();
         ContentItem ci = injector.createContentItem("text/plain", testResource, new ByteArrayInputStream(bytes));
-        ContentPart cp = injector.addContentPart(ci, "text/plain", testResource,
-        		new ByteArrayInputStream(bytes));
-        ci.addContentPart(cp);
         injector.submitContentItem(ci);
 
 		
@@ -58,7 +55,7 @@ public class ClientTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void statuscheck() throws MicoClientException{
 		String uri = "http://demo4.mico-project.eu:8080/marmotta/b7ea7424-9177-4591-8bb1-ebceffd12a8b";
 		StatusChecker statusChecker = micoClientfactory.createStatusChecker();
