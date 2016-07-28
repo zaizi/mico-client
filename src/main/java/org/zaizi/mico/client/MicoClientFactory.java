@@ -3,6 +3,7 @@ package org.zaizi.mico.client;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.openrdf.repository.sparql.SPARQLRepository;
+import org.zaizi.mico.client.download.impl.DownloadClientImpl;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.injector.impl.InjectorImpl;
 import org.zaizi.mico.client.query.impl.Anno4jQueryClientImpl;
@@ -68,5 +69,9 @@ public class MicoClientFactory {
 	 */
 	public final StatusChecker createStatusChecker() {
 		return new StatusCheckerImpl(uriBuilder);
+	}
+	
+	public final DownloadClient createDownloadClient(){
+		return new DownloadClientImpl(uriBuilder);
 	}
 }
