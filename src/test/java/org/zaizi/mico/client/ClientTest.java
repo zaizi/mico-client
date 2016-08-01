@@ -1,6 +1,8 @@
 package org.zaizi.mico.client;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -30,7 +32,7 @@ public class ClientTest {
 		micoClientfactory = new MicoClientFactory(MICO_HOST, MICO_USER, MICO_PASSWORD);
 	}
 
-    @Test
+//    @Test
 	public void testInject() throws MicoClientException, IOException {
     	String testResource = "text1.txt";
         InputStream is = getClass().getResourceAsStream("/"+testResource);
@@ -53,6 +55,30 @@ public class ClientTest {
 			}
 			
 		}
+	}
+    
+    @Test
+	public void testVideoInject() throws MicoClientException, IOException {
+    	String testResource = "sample.mp4";
+        InputStream is = getClass().getResourceAsStream("/"+testResource);
+        byte[] bytes = IOUtils.toByteArray(is);
+    	
+        Injector injector = micoClientfactory.createInjectorClient();
+        ContentItem ci = injector.createContentItem("video/mp4", testResource, new ByteArrayInputStream(bytes));
+        injector.submitContentItem(ci);
+        System.out.println(ci.getUri());
+	}
+    
+//    @Test
+	public void testAudioInject() throws MicoClientException, IOException {
+    	String testResource = "/Users/cperera/Desktop/MICO/war.wav";
+        InputStream is = new FileInputStream(new File(testResource));
+        byte[] bytes = IOUtils.toByteArray(is);
+    	
+        Injector injector = micoClientfactory.createInjectorClient();
+        ContentItem ci = injector.createContentItem("video/mp4", testResource, new ByteArrayInputStream(bytes));
+        injector.submitContentItem(ci);
+        System.out.println(ci.getUri());
 	}
 	
 //	@Test

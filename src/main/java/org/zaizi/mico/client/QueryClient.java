@@ -60,6 +60,15 @@ public interface QueryClient {
      * @throws MicoClientException
      */
     public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException;
+    
+    
+    /**
+     * 
+     * @param contentItemUri
+     * @param formatType
+     * @return
+     */
+    public String getAssetLocation(String contentItemUri, String formatType) throws MicoClientException;
 
     
 

@@ -39,12 +39,12 @@ public class QueryTest
     }
 
  
-    @Test
+//    @Test
     public void testEntityQuery() throws MicoClientException
     {
         QueryClient queryClient = micoClientfactory.createQueryServiceClient();
         StatusChecker statusChecker = micoClientfactory.createStatusChecker();
-        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/a8733625-8c96-4a56-b785-ebabf3738302";
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/fcf9b871-d1dc-4988-acfe-132733d9dc25";
         //String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/50983b66-e763-4348-94aa-d9d845fd2200";
         List<LinkedEntity> entities = new ArrayList<LinkedEntity>();
         while (true)
@@ -152,5 +152,26 @@ public class QueryTest
         }
         assertFalse(faceFragmentsArray.isEmpty());
     }
+	
+	@Test
+	public void testAssetLocation() throws MicoClientException{
+		QueryClient queryClient = micoClientfactory.createQueryServiceClient();
+		DownloadClient downloadClient = micoClientfactory.createDownloadClient();
+        StatusChecker statusChecker = micoClientfactory.createStatusChecker();
+        String contentItemUri = "http://demo4.mico-project.eu:8080/marmotta/fcf9b871-d1dc-4988-acfe-132733d9dc25";
+        while (true){
+        	 List<StatusResponse> statusResponses = statusChecker.checkItemStatus(contentItemUri, true);
+             if (!statusResponses.isEmpty()){
+            	 StatusResponse statusResponse = statusResponses.get(0);
+                 if (statusResponse.isFinished()){
+                	 String urn = queryClient.getAssetLocation(contentItemUri, "text/plain");
+                	 String content = downloadClient.downloadTranscript(urn, contentItemUri);
+                	 logger.info(content);
+                	 break;
+                 }
+             }
+        }
+        
+	}
 
 }

@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.marmotta.ldpath.parser.ParseException;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.repository.RepositoryException;
 import org.zaizi.mico.client.QueryClient;
 import org.zaizi.mico.client.exception.MicoClientException;
 import org.zaizi.mico.client.model.face.FaceFragment;
@@ -21,6 +25,7 @@ import com.github.anno4j.model.impl.selector.FragmentSelector;
 import com.github.anno4j.model.impl.targets.SpecificResource;
 import com.github.anno4j.querying.QueryService;
 
+import eu.mico.platform.anno4j.model.AssetMMM;
 import eu.mico.platform.anno4j.model.PartMMM;
 import eu.mico.platform.anno4j.model.namespaces.MMM;
 import eu.mico.platform.anno4j.model.namespaces.MMMTERMS;
@@ -124,6 +129,36 @@ public class Anno4jQueryClientImpl implements QueryClient {
 
 		return linkedEntities;
 	}
+	
+	@Override
+	public String getAssetLocation(String contentItemUri, String formatType) throws MicoClientException {
+		String urn = "";
+		QueryService queryService;
+		try {
+			queryService = anno4j.createQueryService();
+			queryService.addPrefix(MMM.PREFIX, MMM.NS);
+			
+			queryService.addCriteria("^mmm:hasAsset/^mmm:hasPart", contentItemUri);
+			queryService.addCriteria("dc:format", formatType);
+
+			List<AssetMMM> results = queryService.execute(AssetMMM.class);
+			if(!results.isEmpty()){
+				AssetMMM asset = results.get(0);
+				urn = asset.getLocation();
+			}
+			
+		} catch (RepositoryException e) {
+			throw new MicoClientException("Exception in creating Anno4j connection", e);
+		} catch (MalformedQueryException e) {
+			throw new MicoClientException("Malformed Anno4j Query", e);
+		} catch (QueryEvaluationException e) {
+			throw new MicoClientException("Exception in evaluating Anno4j query", e);
+		} catch (ParseException e) {
+			throw new MicoClientException("Exception in parsing Anno4j query", e);
+		}
+		
+		return urn;
+	}
 
 	@Override
 	public List<FaceFragment> getFaceFragments(String contentItemUri, String... criterias) throws MicoClientException {
@@ -198,5 +233,7 @@ public class Anno4jQueryClientImpl implements QueryClient {
 		}
 		return faceFragments;
 	}
+
+	
 
 }
